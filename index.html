@@ -171,6 +171,60 @@ footer a:hover{color:var(--text)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
+/* README MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;animation:fadeOverlay .2s ease}
+@keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:720px;margin:auto;animation:slideUp .25s ease;position:relative}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:16px 16px 0 0;z-index:1}
+.modal-hdr-left{display:flex;align-items:center;gap:10px}
+.modal-hdr-title{font-family:var(--serif);font-size:1.2rem}
+.modal-version{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--abg);color:var(--accent);border:1px solid var(--abdr);font-family:var(--mono)}
+.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;transition:all .15s;flex-shrink:0}
+.modal-close:hover{background:var(--bg4);color:var(--text)}
+.modal-body{padding:1.5rem;overflow-y:auto;max-height:calc(90vh - 60px)}
+.modal-body::-webkit-scrollbar{width:5px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* README TYPOGRAPHY */
+.readme h2{font-family:var(--serif);font-size:1.25rem;font-weight:400;color:var(--text);margin:1.6rem 0 .6rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+.readme h2:first-child{margin-top:0}
+.readme h3{font-size:13px;font-weight:600;color:var(--text);margin:1.1rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
+.readme p{font-size:13.5px;color:var(--text2);margin-bottom:.7rem;line-height:1.65}
+.readme ul,.readme ol{padding-left:1.2rem;margin-bottom:.8rem}
+.readme li{font-size:13.5px;color:var(--text2);margin-bottom:.25rem;line-height:1.6}
+.readme li strong,.readme p strong{color:var(--text);font-weight:500}
+.readme code{font-family:var(--mono);font-size:11.5px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--accent)}
+.readme a{color:var(--accent);text-decoration:none}
+.readme a:hover{text-decoration:underline}
+
+/* PICOT TABLE IN README */
+.readme-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.readme-table th{background:var(--bg3);padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border2)}
+.readme-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.readme-table tr:last-child td{border-bottom:none}
+.readme-table tr:hover td{background:rgba(255,255,255,.015)}
+
+/* STEP CARDS IN README */
+.readme-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+@media(max-width:480px){.readme-steps{grid-template-columns:1fr}}
+.readme-step{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;display:flex;gap:10px;align-items:flex-start}
+.readme-step-num{width:20px;height:20px;border-radius:50%;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.readme-step-txt{font-size:12.5px;color:var(--text2);line-height:1.5}
+.readme-step-txt strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px}
+
+/* CHANGELOG ITEMS */
+.changelog-item{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.changelog-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.changelog-ver{display:inline-flex;align-items:center;gap:8px;margin-bottom:.4rem}
+.changelog-tag{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)}
+.changelog-date{font-size:11.5px;color:var(--text3)}
+.changelog-new{font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+
+/* README BTN IN NAV */
+.btn-readme{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.btn-readme:hover{border-color:var(--border2);background:var(--bg3);color:var(--text)}
+
 @media(max-width:640px){
   .hero h1{font-size:2rem}
   nav,.main,.how{padding-left:1rem;padding-right:1rem}
@@ -190,7 +244,13 @@ footer a:hover{color:var(--text)}
     <div class="logomark">S</div>
     <span class="logotitle">SR<span>Key</span></span>
   </div>
-  <span class="free-badge">Free — No API key needed</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn-readme" onclick="openReadme()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      About & Guide
+    </button>
+    <span class="free-badge">Free</span>
+  </div>
 </nav>
 
 <div class="hero">
@@ -713,6 +773,151 @@ async function expWord(){
 function showErr(m){document.getElementById('errBox').innerHTML=`<div class="err">${esc(m)}</div>`}
 function clearErr(){document.getElementById('errBox').innerHTML=''}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ── README MODAL ── */
+function openReadme(){
+  document.getElementById('readmeModal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeReadme(){
+  document.getElementById('readmeModal').style.display='none';
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReadme()});
 </script>
+
+<!-- README MODAL -->
+<div id="readmeModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeReadme()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <span class="modal-hdr-title">SRKey</span>
+        <span class="modal-version">v1.3.0</span>
+      </div>
+      <button class="modal-close" onclick="closeReadme()" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body readme">
+
+      <p>A free, browser-based tool that generates <strong>PICOT-based search strategies</strong> for systematic reviews using Claude AI — no API key or installation required.</p>
+
+      <h2>How to use</h2>
+      <div class="readme-steps">
+        <div class="readme-step"><div class="readme-step-num">1</div><div class="readme-step-txt"><strong>Fill in your study</strong>Enter your objective, select study type, date range, databases, and term type</div></div>
+        <div class="readme-step"><div class="readme-step-num">2</div><div class="readme-step-txt"><strong>Build &amp; copy prompt</strong>Click "Build prompt", copy it, then open Claude.ai and paste</div></div>
+        <div class="readme-step"><div class="readme-step-num">3</div><div class="readme-step-txt"><strong>Paste JSON back</strong>Copy Claude's entire JSON response and paste it into the response box</div></div>
+        <div class="readme-step"><div class="readme-step-num">4</div><div class="readme-step-txt"><strong>Export &amp; use</strong>Copy individual queries or export the full strategy to Word (.docx)</div></div>
+      </div>
+
+      <h2>PICOT framework</h2>
+      <table class="readme-table">
+        <thead><tr><th>Element</th><th>Stands for</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>P</code></td><td><strong>Population</strong></td><td>Adults with type 2 diabetes</td></tr>
+          <tr><td><code>I</code></td><td><strong>Intervention</strong></td><td>SGLT-2 inhibitors</td></tr>
+          <tr><td><code>C</code></td><td><strong>Comparator</strong></td><td>Placebo or standard care</td></tr>
+          <tr><td><code>O</code></td><td><strong>Outcome</strong></td><td>Cardiovascular events, HbA1c</td></tr>
+          <tr><td><code>T</code></td><td><strong>Time / Study type</strong></td><td>RCTs, inception–2024</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Features</h2>
+
+      <h3>Search term types</h3>
+      <ul>
+        <li><strong>MeSH + Title/Abstract</strong> — NLM MeSH headings combined with free-text keywords, synonyms, and abbreviations (recommended)</li>
+        <li><strong>MeSH only</strong> — controlled vocabulary terms only</li>
+        <li><strong>Title/Abstract only</strong> — free-text keywords and synonyms only</li>
+      </ul>
+
+      <h3>Study type filters</h3>
+      <ul>
+        <li>Randomised Controlled Trials (RCTs)</li>
+        <li>Observational studies (cohort, case-control, cross-sectional)</li>
+        <li>Systematic reviews / Meta-analyses</li>
+        <li>All study types (no filter applied)</li>
+      </ul>
+      <p>Multiple study types can be selected simultaneously.</p>
+
+      <h3>Database support</h3>
+      <table class="readme-table">
+        <thead><tr><th>Database</th><th>Query syntax used</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PubMed</strong></td><td><code>[MeSH Terms]</code>, <code>[tiab]</code></td></tr>
+          <tr><td><strong>Embase</strong></td><td><code>/exp</code>, <code>:ti,ab</code></td></tr>
+          <tr><td><strong>Cochrane CENTRAL</strong></td><td>MeSH + free-text</td></tr>
+          <tr><td><strong>Scopus</strong></td><td><code>TITLE-ABS-KEY()</code></td></tr>
+          <tr><td><strong>Web of Science</strong></td><td><code>TS=()</code></td></tr>
+        </tbody>
+      </table>
+      <p>Select one or more databases — all queries are generated and displayed simultaneously.</p>
+
+      <h3>Date range</h3>
+      <p>Leave unchecked to search from inception to today. Enable the date picker to restrict by publication year. Date filter syntax is applied automatically per database.</p>
+
+      <h3>Export to Word</h3>
+      <p>Downloads a formatted <code>.docx</code> file containing the PICOT framework table, all database queries, and study metadata (objective, date, term type, study type, date range).</p>
+
+      <h2>Tips for best results</h2>
+      <ul>
+        <li>Be <strong>specific</strong> in your objective — include population, intervention, and comparator where possible</li>
+        <li>Always <strong>verify MeSH terms</strong> at <a href="https://meshb.nlm.nih.gov/" target="_blank">meshb.nlm.nih.gov</a> before use</li>
+        <li>Generated queries are a <strong>starting point</strong> — additional terms may be needed based on your protocol</li>
+        <li><strong>Validate your final strategy</strong> with a medical librarian before conducting the review</li>
+      </ul>
+
+      <h2>Changelog</h2>
+      <div class="changelog-item">
+        <div class="changelog-ver">
+          <span class="changelog-tag">v1.3.0</span>
+          <span class="changelog-date">April 2026</span>
+          <span class="changelog-new">Latest</span>
+        </div>
+        <ul>
+          <li>Upgraded PICO to <strong>PICOT</strong> framework (added Time / Study type element)</li>
+          <li>Added <strong>study type filters</strong>: RCT, Observational, Systematic review, All</li>
+          <li>Added <strong>date range picker</strong> with per-database date filter syntax</li>
+          <li>Multi-database display — all selected databases rendered simultaneously</li>
+          <li>Added this in-app README</li>
+        </ul>
+      </div>
+      <div class="changelog-item">
+        <div class="changelog-ver">
+          <span class="changelog-tag">v1.2.0</span>
+          <span class="changelog-date">March 2026</span>
+        </div>
+        <ul>
+          <li>Added <strong>Export to Word</strong> (.docx) with formatted tables</li>
+          <li>Word document includes study metadata header</li>
+        </ul>
+      </div>
+      <div class="changelog-item">
+        <div class="changelog-ver">
+          <span class="changelog-tag">v1.1.0</span>
+          <span class="changelog-date">February 2026</span>
+        </div>
+        <ul>
+          <li>Multi-database selection (PubMed, Embase, Cochrane, Scopus, Web of Science)</li>
+          <li>Per-database copy and copy-all functionality</li>
+        </ul>
+      </div>
+      <div class="changelog-item">
+        <div class="changelog-ver">
+          <span class="changelog-tag">v1.0.0</span>
+          <span class="changelog-date">January 2026</span>
+        </div>
+        <ul>
+          <li>Initial release — PICO framework, MeSH and TIAB term generation</li>
+          <li>Single-file HTML app, no installation required</li>
+        </ul>
+      </div>
+
+      <h2>Disclaimer</h2>
+      <p>SRKey is intended as a research aid for health sciences students and researchers. Generated search strategies are AI-assisted starting points and <strong>must be reviewed and validated by a qualified medical librarian</strong> before use in a systematic review.</p>
+      <p style="margin-bottom:0">Built with <a href="https://claude.ai" target="_blank">Claude AI</a> · <a href="https://docx.js.org" target="_blank">docx.js</a> · Hosted on GitHub Pages · MIT License</p>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
