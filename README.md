@@ -1,158 +1,146 @@
 # SRKey — Systematic Review Search Strategy Generator
 
-> A free, browser-based tool that generates PICOT-based search strategies for systematic reviews using Claude AI — no API key or installation required.
+> **Generate professional, database-ready search strategies for systematic reviews — free, no API key required.**
+
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://chayutthaphong.github.io/srkey/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://chayutthaphong.github.io/srkey/)
+
+**🔗 Live App:** [https://chayutthaphong.github.io/srkey/](https://chayutthaphong.github.io/srkey/)
 
 ---
 
-## Version
+## What is SRKey?
 
-**v1.3.0** — April 2026
+SRKey is a free, browser-based tool that helps researchers build comprehensive PICOTS-based search strategies for systematic reviews. It generates structured prompts for [Claude.ai](https://claude.ai), then renders the JSON response into export-ready Word documents — no account, no API key, no server required.
 
 ---
 
 ## Features
 
-### PICOT Framework
-Generates structured search terms across all five PICOT elements:
-
-| Element | Description |
-|---------|-------------|
-| **P** | Population |
-| **I** | Intervention |
-| **C** | Comparator |
-| **O** | Outcome |
-| **T** | Time frame & Study type |
-
-### Search Term Types
-Choose how search terms are generated:
-- **MeSH + Title/Abstract** — standard NLM MeSH headings combined with free-text keywords, synonyms, and abbreviations
-- **MeSH terms only** — controlled vocabulary terms
-- **Title/Abstract only** — free-text keywords, synonyms, and brand names
-
-### Multi-Database Support
-Generate ready-to-use queries for one or more databases in a single run:
-
-| Database | Query Syntax |
-|----------|-------------|
-| PubMed | `[MeSH Terms]`, `[tiab]` |
-| Embase | `/exp`, `:ti,ab` |
-| Cochrane CENTRAL | MeSH + free-text |
-| Scopus | `TITLE-ABS-KEY()` |
-| Web of Science | `TS=()` |
-
-### Study Type Filters (T in PICOT)
-Restrict results by study design — select one or more:
-- Randomised Controlled Trials (RCTs)
-- Observational studies (cohort, case-control, cross-sectional)
-- Systematic reviews / Meta-analyses
-- All study types (no filter)
-
-### Date Range
-- Default: inception to today (no restriction)
-- Optional date picker to restrict by publication date
-- Date filter syntax applied automatically per database
-
-### Export to Word
-Downloads a formatted `.docx` file containing:
-- Study metadata (objective, date, term type, study type, date range)
-- PICOT framework table with MeSH and/or TIAB terms
-- Full search query table for all selected databases
-
-### Privacy & Cost
-- **100% free** — no API key needed
-- Works entirely in the browser — no data sent to any server
-- Uses [Claude.ai](https://claude.ai) free tier as the AI backend
+- **PICOTS framework** — structured input for Population, Intervention, Comparator, Outcome, Timeframe, Setting, and NOT (exclusions)
+- **Multi-database support** — PubMed, Embase, Cochrane, Scopus, Web of Science, Google Scholar
+- **MeSH + Title/Abstract queries** — broadest coverage with controlled vocabulary and free-text variants
+- **Flexible search depth** — Comprehensive (full synonyms, truncation, MeSH explosion) or Quick (core terms only)
+- **Multiple query modes** — Combined query per database, or per PICOTS element + combined
+- **Word export (.docx)** — A4-formatted strategy document and blank search log template
+- **100% client-side** — no data leaves your browser; powered by Claude.ai via copy-paste
+- **Free to use** — no API key, no registration required
 
 ---
 
-## How to Use
+## How It Works
 
-SRKey uses a **copy-paste workflow** with Claude.ai. Follow these four steps:
+```
+[You] → Fill in PICOTS + options → Copy generated prompt
+         ↓
+[Claude.ai] → Paste prompt → Run → Copy JSON response
+         ↓
+[SRKey] → Paste JSON → Render results → Export to Word
+```
 
-### Step 1 — Fill in your study details
+### Step-by-step
 
-1. Open the app in your browser
-2. Enter your **study title or research objective** in the text box
-   - Example: *"Effectiveness of cytisine versus varenicline for smoking cessation in adults"*
-3. Select your **study type** (RCT, Observational, Systematic review, or All)
-4. Optionally enable a **date range** using the date picker
-5. Select one or more **databases** (PubMed, Embase, Cochrane, Scopus, Web of Science)
-6. Choose your **search term type** (MeSH + TIAB, MeSH only, or TIAB only)
-
-### Step 2 — Generate and copy the prompt
-
-1. Click **"Build prompt for Claude.ai"**
-2. A structured prompt will appear — click **"Copy prompt"**
-3. Click **"Open Claude.ai ↗"** to open Claude.ai in a new tab
-4. Paste the prompt into Claude.ai and press Enter
-
-### Step 3 — Paste Claude's response back
-
-1. Wait for Claude to generate the JSON response
-2. Select and **copy the entire response** (from `{` to `}`)
-3. Return to SRKey
-4. Paste the JSON into the **"Paste Claude's JSON response"** box
-5. Click **"Render results"**
-
-### Step 4 — Use your search strategy
-
-- View the **PICOT table** with all search terms displayed as chips
-- Browse **individual database queries** — each has a **Copy** button
-- Click **"Copy all queries"** to copy all databases at once
-- Click **"Export to Word"** to download a formatted `.docx` file
+1. **Enter your research objective** — be specific about population, intervention, and comparator
+2. **Optionally fill in PICOTS** — specify P, I, C, O, T, S terms manually, or let AI infer from the title
+3. **Select study design & date range** — RCT, Observational, Systematic reviews, or All
+4. **Choose databases** — minimum recommended: PubMed + Embase + Cochrane
+5. **Set term type, query mode & search depth** — MeSH + TIAB is recommended for systematic reviews
+6. **Build prompt → paste into Claude.ai** — click "Build prompt", open [claude.ai](https://claude.ai), paste and run
+7. **Paste JSON back → render** — copy Claude's full JSON response and paste into SRKey
+8. **Export to Word** — download the strategy document and/or search log template
 
 ---
 
-## Tips for Best Results
+## PICOTS Framework
 
-- **Be specific** in your study objective — include population, intervention, and comparator where possible
-- **Review and refine** generated MeSH terms before use; Claude may occasionally suggest non-standard headings
-- For PubMed, verify MeSH terms at [MeSH Browser](https://meshb.nlm.nih.gov/)
-- Always **validate your final search strategy** with a medical librarian before conducting the review
-- The generated queries are a starting point — additional terms may need to be added based on your review protocol
+| Letter | Meaning | Example |
+|--------|---------|---------|
+| **P** | Population | Adults with type 2 diabetes |
+| **I** | Intervention | SGLT-2 inhibitors (dapagliflozin, empagliflozin) |
+| **C** | Comparator | Placebo or standard care (metformin) |
+| **O** | Outcome | HbA1c reduction, cardiovascular events |
+| **T** | Timeframe | ≥6 months follow-up, published 2000–present |
+| **S** | Setting | Primary care, hospital, community, LMIC |
+| **NOT** | Exclusions | Animal studies, in vitro, case reports |
 
 ---
 
-## Changelog
+## Database Coverage
 
-### v1.3.0 — April 2026
-- Upgraded PICO to **PICOT** framework (added Time / Study type element)
-- Added **study type filters**: RCT, Observational, Systematic review, All
-- Added **date range picker** with per-database date filter syntax
-- Multi-database display: all selected databases now rendered simultaneously
+| Database | Strength | Syntax | Access |
+|----------|----------|--------|--------|
+| PubMed | Biomedical, free, comprehensive | `[MeSH Terms]`, `[tiab]` | Free |
+| Embase | Pharmacology, European journals, Emtree | `/exp`, `:ti,ab` | Subscription |
+| Cochrane | Clinical trials, SR/meta-analysis | MeSH + free-text | Free/Subscription |
+| Scopus | Broad multidisciplinary | `TITLE-ABS-KEY()` | Subscription |
+| Web of Science | Citation tracking, high-impact journals | `TS=()` | Subscription |
+| Google Scholar | Grey literature, theses | Free-text only | Free |
 
-### v1.2.0
-- Added **Export to Word** (.docx) with formatted PICO table and query table
-- Improved Word document layout with study metadata header
+---
 
-### v1.1.0
-- Added multi-database selection (PubMed, Embase, Cochrane, Scopus, Web of Science)
-- Added copy per-database and copy-all functionality
-- Improved prompt engineering for professional-grade queries
+## ⚠️ Important Disclaimer
 
-### v1.0.0
-- Initial release
-- PICO framework with MeSH and Title/Abstract term generation
-- Single-file HTML application, no installation required
+All generated search strategies **must be reviewed and validated by a qualified medical librarian** before use in a systematic review. AI-generated queries are a starting point — they may miss database-specific syntax nuances, require additional subject-specific terms, or need adjustment based on your review protocol.
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: Vanilla HTML / CSS / JavaScript (single file, no framework)
-- **AI backend**: [Claude.ai](https://claude.ai) (free tier, manual copy-paste workflow)
-- **Word export**: [docx.js](https://docx.js.org/) v8.5.0 (browser-side generation)
-- **Fonts**: DM Serif Display, DM Mono, Outfit (Google Fonts)
-- **Hosting**: GitHub Pages
+- **Vanilla HTML/CSS/JavaScript** — no framework, no build step
+- **[Claude.ai](https://claude.ai)** — AI-powered search term generation (via copy-paste workflow)
+- **[docx.js](https://docx.js.org)** — client-side Word document generation
+- **MIT License**
 
 ---
 
-## Disclaimer
+## Key References
 
-SRKey is intended as a research aid for health sciences students and researchers. Generated search strategies are AI-assisted starting points and **must be reviewed and validated by a qualified medical librarian** before use in a systematic review. MeSH terms and database syntax should be verified against current database documentation.
+### Reporting Standards
+- Page MJ, et al. *The PRISMA 2020 statement.* BMJ. 2021;372:n71. [doi:10.1136/bmj.n71](https://doi.org/10.1136/bmj.n71)
+- Moher D, et al. *The PRISMA statement.* PLoS Med. 2009;6(7):e1000097. [doi:10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+
+### Cochrane Methodology
+- Higgins JPT, et al. *Cochrane Handbook for Systematic Reviews v6.4.* 2023. [training.cochrane.org/handbook](https://training.cochrane.org/handbook)
+- Lefebvre C, et al. *Chapter 4: Searching for and selecting studies.* Cochrane Handbook v6.4.
+
+### Search Peer Review
+- McGowan J, et al. *PRESS 2015 guideline statement.* J Clin Epidemiol. 2016;75:40-46.
+
+### Useful Tools
+- [NLM MeSH Browser](https://meshb.nlm.nih.gov/) — verify MeSH terms
+- [PRISMA website](https://www.prisma-statement.org/) — checklists and flow diagrams
+
+---
+
+## Changelog
+
+### v2.0.0 — April 2026
+- Complete UI/UX redesign — professional light theme, cleaner layout
+- Added optional PICOTS specification (Cards 1–2) with NOT field for exclusions
+- Added **Author & Journal** and **No term generation** search term types
+- Added **Google Scholar** as a database option
+- Search log: numbering resets per database
+- Removed on-screen log table — export directly to Word
+- Improved A4-format Word exports with professional layout
+- Added **Search logic explanation** section in results
+- Prominent validation warning banner throughout
+
+### v1.4.0 — April 2026
+- Query mode (Combined / Per PICOTS), search log export, database direct links
+
+### v1.3.0 — April 2026
+- PICOTS framework, study type filters, date range picker
+
+### v1.0–1.2 — January–March 2026
+- Initial release, multi-database support, Word export
 
 ---
 
 ## License
 
-MIT License — free to use, share, and modify with attribution.
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+*SRKey — Making systematic review search strategies accessible to every researcher.*
