@@ -7,7 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js" onerror="docxLoadErr=true"></script>
+<script>
+var docxLoadErr=false;
+// Fallback to jsdelivr if unpkg fails
+window.addEventListener('load',function(){
+  if(!window.docx){
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+    s.onerror=function(){docxLoadErr=true};
+    document.head.appendChild(s);
+  }
+});
+</script>
 <style>
 :root{
   --bg:#0d0f12;--bg2:#13161b;--bg3:#1a1e25;--bg4:#21262f;
@@ -668,7 +680,11 @@ function cpAll(){
 
 /* ── EXPORT WORD ── */
 async function expWord(){
-  if(!results||!window.docx)return;
+  if(!results){showErr('No results to export. Please render results first.');return}
+  if(docxLoadErr||!window.docx){
+    showErr('Word export library failed to load. Please check your internet connection and reload the page.');
+    return;
+  }
   const btn=document.getElementById('wBtn');
   btn.disabled=true;btn.innerHTML='<div class="spin-d"></div><span>Exporting...</span>';
   try{
@@ -755,8 +771,7 @@ async function expWord(){
       }]
     });
 
-    const buf=await Packer.toBuffer(doc);
-    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const blob=await Packer.toBlob(doc);
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;a.download=`search_strategy_${new Date().toISOString().slice(0,10)}.docx`;
