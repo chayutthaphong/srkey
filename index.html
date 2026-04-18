@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SRKey — Systematic Review Search Strategy Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<style>
+:root{
+  --bg:#0d0f12;--bg2:#13161b;--bg3:#1a1e25;--bg4:#21262f;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --text:#e8eaed;--text2:#8b93a0;--text3:#555e6b;
+  --accent:#4f8ef7;--accent2:#3a72d8;
+  --abg:rgba(79,142,247,.1);--abdr:rgba(79,142,247,.25);
+  --green:#3ecf7a;--gbg:rgba(62,207,122,.1);--gbdr:rgba(62,207,122,.25);
+  --amber:#f5a623;--ybg:rgba(245,166,35,.1);--ybdr:rgba(245,166,35,.25);
+  --red:#f87171;--rbg:rgba(238,85,85,.1);--rbdr:rgba(238,85,85,.25);
+  --purple:#a78bfa;--pbg:rgba(167,139,250,.1);--pddr:rgba(167,139,250,.25);
+  --teal:#2dd4bf;--tbg:rgba(45,212,191,.1);--tbdr:rgba(45,212,191,.25);
+  --r:8px;--rl:12px;
+  --sans:'Outfit',sans-serif;--serif:'DM Serif Display',serif;--mono:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(13,15,18,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{display:flex;align-items:center;gap:10px}
+.logomark{width:30px;height:30px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:#fff;font-style:italic}
+.logotitle{font-family:var(--serif);font-size:20px;letter-spacing:-.01em}
+.logotitle span{color:var(--accent)}
+.free-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr);letter-spacing:.04em}
+
+.hero{padding:3.5rem 2rem 1.5rem;text-align:center;max-width:680px;margin:0 auto}
+.hero h1{font-family:var(--serif);font-size:2.6rem;font-weight:400;line-height:1.2;letter-spacing:-.02em;margin-bottom:.8rem}
+.hero h1 em{color:var(--accent);font-style:italic}
+.hero p{font-size:.95rem;color:var(--text2);max-width:500px;margin:0 auto;font-weight:300}
+
+.how{max-width:900px;margin:0 auto 1.8rem;padding:0 2rem}
+.steps{display:flex}
+.step{flex:1;background:var(--bg2);border:1px solid var(--border);padding:.9rem 1rem;display:flex;align-items:flex-start;gap:10px}
+.step:first-child{border-radius:var(--rl) 0 0 var(--rl)}
+.step:last-child{border-radius:0 var(--rl) var(--rl) 0}
+.step:not(:last-child){border-right:none}
+.snum{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-top:3px}
+.stxt{font-size:11.5px;color:var(--text2);line-height:1.45}
+.stxt strong{color:var(--text);font-weight:500;display:block;margin-bottom:1px;font-size:12px}
+
+.main{max-width:900px;margin:0 auto;padding:0 2rem 4rem}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:.9rem;animation:fadeIn .35s ease}
+.card-hdr{padding:.85rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.cnum{width:20px;height:20px;border-radius:50%;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctitle{font-size:13px;font-weight:500}
+.card-body{padding:1.1rem 1.4rem}
+
+textarea,input[type=date]{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:9px 13px;color:var(--text);font-family:var(--sans);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+textarea{resize:vertical;line-height:1.6}
+input[type=date]{height:38px;cursor:pointer;color-scheme:dark}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
+textarea:focus,input[type=date]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,142,247,.1)}
+::placeholder{color:var(--text3)}
+
+/* TWO-COL GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:5px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;font-family:var(--sans);user-select:none}
+.pill:hover:not(.on){background:var(--bg4);color:var(--text)}
+.pill.on{background:var(--abg);border-color:var(--abdr);color:var(--accent);font-weight:500}
+.pill.db.on{background:var(--gbg);border-color:var(--gbdr);color:var(--green)}
+.pill.stype.on{background:var(--tbg);border-color:var(--tbdr);color:var(--teal)}
+
+/* SECTION LABEL */
+.slabel{font-size:11.5px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+
+/* DATE ROW */
+.date-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.date-sep{color:var(--text3);font-size:13px;text-align:center}
+.date-field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
+.date-check{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.date-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.date-check label{font-size:13px;color:var(--text2);cursor:pointer}
+
+/* STUDY TYPE CHECKBOXES */
+.stype-grid{display:flex;flex-wrap:wrap;gap:6px}
+
+/* BUTTONS */
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:12px 32px;border-radius:var(--r);background:var(--accent);color:#fff;font-weight:500;font-size:15px;cursor:pointer;border:none;font-family:var(--sans);transition:background .15s,transform .1s}
+.btn-p:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-p:active{transform:translateY(0)}
+.btn-p.sm{padding:9px 20px;font-size:13.5px}
+.btn-claude{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--r);background:#b8601e;color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;border:none;font-family:var(--sans);transition:background .15s,transform .1s;text-decoration:none}
+.btn-claude:hover{background:#a05318;transform:translateY(-1px)}
+.btn-s{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:12.5px;cursor:pointer;border:1px solid var(--border2);font-family:var(--sans);transition:all .15s}
+.btn-s:hover:not(:disabled){background:var(--bg4);color:var(--text)}
+.btn-s:disabled{opacity:.35;cursor:not-allowed}
+.btn-s.ok{background:var(--gbg);border-color:var(--gbdr);color:var(--green)}
+.btn-w{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:rgba(37,99,235,.12);color:#93bbfc;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid rgba(37,99,235,.28);font-family:var(--sans);transition:all .15s}
+.btn-w:hover:not(:disabled){background:rgba(37,99,235,.2);color:#b5d0ff}
+.btn-w:disabled{opacity:.35;cursor:not-allowed}
+
+/* PROMPT */
+.prompt-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;animation:fadeIn .35s ease}
+.prompt-hdr{padding:11px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--bg3)}
+.prompt-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
+.badge.g{background:var(--gbg);color:var(--green);border-color:var(--gbdr)}
+.prompt-body{padding:14px 15px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:240px;overflow-y:auto}
+.prompt-body::-webkit-scrollbar{width:4px}
+.prompt-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.prompt-foot{padding:10px 15px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--bg3)}
+.hint{font-size:11.5px;color:var(--text3)}
+
+/* PASTE */
+.paste-wrap{margin-top:.9rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;animation:fadeIn .35s ease}
+.paste-hdr{padding:11px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg3)}
+.paste-body{padding:14px 15px}
+.paste-body textarea{font-family:var(--mono);font-size:12px;min-height:100px}
+.parse-row{display:flex;justify-content:flex-end;gap:8px;margin-top:9px}
+
+/* RESULTS */
+#res{margin-top:1.4rem;animation:fadeIn .35s ease}
+.res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.res-title{font-family:var(--serif);font-size:1.35rem}
+.res-actions{display:flex;gap:7px;flex-wrap:wrap}
+
+/* PICOT TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border)}
+table.pt{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2)}
+table.pt th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;background:var(--bg3);border-bottom:1px solid var(--border2)}
+table.pt td{padding:10px 14px;vertical-align:top;border-bottom:1px solid var(--border);line-height:1.5}
+table.pt tr:last-child td{border-bottom:none}
+table.pt tr:hover td{background:rgba(255,255,255,.015)}
+.pb{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;margin-right:5px;font-family:var(--mono)}
+.pb-p{background:var(--pbg);color:var(--purple);border:1px solid var(--pddr)}
+.pb-i{background:var(--abg);color:var(--accent);border:1px solid var(--abdr)}
+.pb-c{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+.pb-o{background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
+.pb-t{background:var(--tbg);color:var(--teal);border:1px solid var(--tbdr)}
+.mc{display:inline-block;font-style:italic;font-size:11.5px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 6px;margin:2px 2px 2px 0}
+.tc{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 6px;margin:2px 2px 2px 0}
+
+/* DB QUERY TABS */
+.db-sec{margin-top:1.3rem}
+.db-sec-lbl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:9px}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:7px;transition:border-color .2s}
+.qcard:hover{border-color:var(--border2)}
+.qcard-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.dbl{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:var(--mono)}
+.db-pm{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.db-em{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+.db-co{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+.db-sc{background:var(--abg);color:var(--accent);border:1px solid var(--abdr)}
+.db-ws{background:var(--pbg);color:var(--purple);border:1px solid var(--pddr)}
+.qbody{padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.75;word-break:break-word;color:var(--text)}
+
+.err{background:var(--rbg);border:1px solid var(--rbdr);border-radius:var(--r);padding:11px 15px;color:var(--red);font-size:13px;margin-top:9px}
+.divider{height:1px;background:var(--border);margin:1.3rem 0}
+
+footer{border-top:1px solid var(--border);padding:1.4rem 2rem;text-align:center;color:var(--text3);font-size:11.5px;max-width:900px;margin:0 auto}
+footer a{color:var(--text2);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+.spin-d{width:13px;height:13px;border-radius:50%;border:2px solid rgba(79,142,247,.2);border-top-color:var(--accent);animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:640px){
+  .hero h1{font-size:2rem}
+  nav,.main,.how{padding-left:1rem;padding-right:1rem}
+  .steps{flex-direction:column}
+  .step:first-child{border-radius:var(--rl) var(--rl) 0 0}
+  .step:last-child{border-radius:0 0 var(--rl) var(--rl)}
+  .step:not(:last-child){border-right:1px solid var(--border);border-bottom:none}
+  .date-row{grid-template-columns:1fr;gap:6px}
+  .date-sep{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logomark">S</div>
+    <span class="logotitle">SR<span>Key</span></span>
+  </div>
+  <span class="free-badge">Free — No API key needed</span>
+</nav>
+
+<div class="hero">
+  <h1>Generate <em>search strategies</em><br/>for systematic reviews</h1>
+  <p>PICOT-based search terms and database-ready queries using Claude AI — free via claude.ai.</p>
+</div>
+
+<div class="how">
+  <div class="steps">
+    <div class="step"><div class="snum">1</div><div class="stxt"><strong>Fill in your study</strong>Enter objective &amp; PICOT options</div></div>
+    <div class="step"><div class="snum">2</div><div class="stxt"><strong>Copy → Claude.ai</strong>Paste the prompt and run</div></div>
+    <div class="step"><div class="snum">3</div><div class="stxt"><strong>Paste JSON back</strong>Copy Claude's full response</div></div>
+    <div class="step"><div class="snum">4</div><div class="stxt"><strong>Export to Word</strong>Download formatted .docx</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- 1. Study -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">1</div><div class="ctitle">Study title or research objective</div></div>
+    <div class="card-body">
+      <textarea id="studyInput" rows="3" placeholder="e.g. Effectiveness of cytisine versus varenicline for smoking cessation in adults"></textarea>
+    </div>
+  </div>
+
+  <!-- 2. Study type (T in PICOT) -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">2</div><div class="ctitle">Study type <span style="color:var(--teal);font-size:12px;margin-left:4px">(T — Time &amp; Type of study)</span></div></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem">
+
+      <div>
+        <div class="slabel">Study design</div>
+        <div class="stype-grid">
+          <button class="pill stype on" data-st="RCT" onclick="toggleStype(this)">Randomised Controlled Trials (RCTs)</button>
+          <button class="pill stype" data-st="Observational" onclick="toggleStype(this)">Observational studies</button>
+          <button class="pill stype" data-st="Systematic review" onclick="toggleStype(this)">Systematic reviews / Meta-analyses</button>
+          <button class="pill stype" data-st="All" onclick="toggleStype(this)">All study types</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="slabel" style="margin-bottom:8px">Date range</div>
+        <div class="date-check">
+          <input type="checkbox" id="useDateRange" onchange="toggleDateRange()" />
+          <label for="useDateRange">Restrict search to a specific date range</label>
+        </div>
+        <div id="dateRangeRow" class="date-row" style="display:none">
+          <div class="date-field">
+            <label for="dateFrom">From</label>
+            <input type="date" id="dateFrom" />
+          </div>
+          <div class="date-sep">—</div>
+          <div class="date-field">
+            <label for="dateTo">To</label>
+            <input type="date" id="dateTo" />
+          </div>
+        </div>
+        <div id="dateHint" style="font-size:12px;color:var(--text3);margin-top:4px">Leave unchecked to search from inception to today.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. Databases -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">3</div><div class="ctitle">Select databases <span style="font-size:12px;color:var(--text2);font-weight:400">(select one or more)</span></div></div>
+    <div class="card-body">
+      <div class="pills">
+        <button class="pill db on" data-db="PubMed" onclick="toggleDb(this)">PubMed</button>
+        <button class="pill db on" data-db="Embase" onclick="toggleDb(this)">Embase</button>
+        <button class="pill db on" data-db="Cochrane" onclick="toggleDb(this)">Cochrane</button>
+        <button class="pill db on" data-db="Scopus" onclick="toggleDb(this)">Scopus</button>
+        <button class="pill db on" data-db="Web of Science" onclick="toggleDb(this)">Web of Science</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Term type -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">4</div><div class="ctitle">Search term type</div></div>
+    <div class="card-body">
+      <div class="pills">
+        <button class="pill on" data-type="both" onclick="setType('both',this)">MeSH + Title/Abstract</button>
+        <button class="pill" data-type="mesh" onclick="setType('mesh',this)">MeSH terms only</button>
+        <button class="pill" data-type="tiab" onclick="setType('tiab',this)">Title/Abstract only</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;margin:1.6rem 0 1.1rem">
+    <button class="btn-p" onclick="buildPrompt()">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Build prompt for Claude.ai
+    </button>
+  </div>
+
+  <div id="errBox"></div>
+
+  <div id="promptArea" style="display:none">
+    <div class="prompt-wrap">
+      <div class="prompt-hdr">
+        <div class="prompt-title"><span class="badge">Step 2</span> Copy this prompt → paste into Claude.ai</div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <button class="btn-s" id="cpBtn" onclick="copyPrompt()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy prompt
+          </button>
+          <a class="btn-claude" href="https://claude.ai" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open Claude.ai ↗
+          </a>
+        </div>
+      </div>
+      <div class="prompt-body" id="promptTxt"></div>
+      <div class="prompt-foot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span class="hint">Run the prompt in Claude.ai → copy the <strong style="color:var(--text2)">entire JSON response</strong> → paste below.</span>
+      </div>
+    </div>
+
+    <div class="paste-wrap">
+      <div class="paste-hdr">
+        <span class="badge g">Step 3</span>
+        <span style="font-size:13px;font-weight:500">Paste Claude's JSON response here</span>
+      </div>
+      <div class="paste-body">
+        <textarea id="jsonIn" rows="6" placeholder='Paste Claude&apos;s full JSON response here, e.g. { "picot": {...}, "terms": {...}, "queries": {...} }'></textarea>
+        <div class="parse-row">
+          <button class="btn-s" onclick="document.getElementById('jsonIn').value=''">Clear</button>
+          <button class="btn-p sm" onclick="parseRender()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Render results
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="res" style="display:none"></div>
+</div>
+
+<footer>
+  <p>SRKey uses <a href="https://claude.ai" target="_blank">Claude.ai</a> to generate PICOT-based search strategies — free, no account required for the app. Always validate generated strategies with a medical librarian before use.</p>
+</footer>
+
+<script>
+/* ── STATE ── */
+let stype='both';
+let dbs=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
+let studyTypes=['RCT'];
+let results=null, study='', prompt='';
+
+/* ── INIT: set today as default dateTo ── */
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('dateTo').value=today;
+  document.getElementById('dateFrom').value='1900-01-01';
+});
+
+/* ── TOGGLES ── */
+function setType(t,el){
+  stype=t;
+  document.querySelectorAll('.pill[data-type]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function toggleDb(el){
+  const db=el.dataset.db;
+  if(el.classList.contains('on')){
+    if(dbs.length===1)return;
+    el.classList.remove('on');
+    dbs=dbs.filter(d=>d!==db);
+  } else {
+    el.classList.add('on');
+    if(!dbs.includes(db))dbs.push(db);
+  }
+}
+
+function toggleStype(el){
+  const st=el.dataset.st;
+  if(st==='All'){
+    // "All" is exclusive
+    document.querySelectorAll('.pill.stype').forEach(b=>b.classList.remove('on'));
+    el.classList.add('on');
+    studyTypes=['All'];
+    return;
+  }
+  // deselect "All" if present
+  document.querySelectorAll('.pill.stype[data-st="All"]').forEach(b=>b.classList.remove('on'));
+  studyTypes=studyTypes.filter(s=>s!=='All');
+
+  if(el.classList.contains('on')){
+    if(studyTypes.length===1)return;
+    el.classList.remove('on');
+    studyTypes=studyTypes.filter(s=>s!==st);
+  } else {
+    el.classList.add('on');
+    if(!studyTypes.includes(st))studyTypes.push(st);
+  }
+}
+
+function toggleDateRange(){
+  const use=document.getElementById('useDateRange').checked;
+  document.getElementById('dateRangeRow').style.display=use?'grid':'none';
+  document.getElementById('dateHint').style.display=use?'none':'block';
+}
+
+/* ── BUILD PROMPT ── */
+function buildPrompt(){
+  const v=document.getElementById('studyInput').value.trim();
+  clearErr();
+  if(!v){showErr('Please enter a study title or research objective.');return}
+  study=v;
+
+  const tl={both:'MeSH terms AND Title/Abstract (TIAB) keywords',mesh:'MeSH terms only',tiab:'Title/Abstract (TIAB) keywords only'}[stype];
+  const dl=dbs.join(', ');
+
+  /* Date range */
+  const useDate=document.getElementById('useDateRange').checked;
+  let dateStr='';
+  let dateInstructions='';
+  if(useDate){
+    const from=document.getElementById('dateFrom').value;
+    const to=document.getElementById('dateTo').value;
+    const fmtDate=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+    dateStr=`${fmtDate(from)} to ${fmtDate(to)}`;
+    dateInstructions=`- Apply date restriction: ${dateStr}. Add appropriate date filter syntax for each database (e.g. PubMed: AND ("${from}"[Date - Publication] : "${to}"[Date - Publication]), Embase: AND [${from.slice(0,4)}-${to.slice(0,4)}]/py, Scopus: AND PUBYEAR > ${from.slice(0,4)-1} AND PUBYEAR < ${to.slice(0,4)-1}).`;
+  } else {
+    dateInstructions='- No date restriction (search from inception to today). Do NOT add any date filter.';
+  }
+
+  /* Study type */
+  const stypeLabel=studyTypes.includes('All')?'all study types':studyTypes.join(' and ');
+  let stypeInstructions='';
+  if(!studyTypes.includes('All')){
+    const filters=[];
+    if(studyTypes.includes('RCT'))filters.push('Include appropriate RCT filter (e.g. MeSH: "Randomized Controlled Trial"[pt] for PubMed; randomized controlled trial/exp for Embase)');
+    if(studyTypes.includes('Observational'))filters.push('Include appropriate observational study filter (cohort, case-control, cross-sectional studies)');
+    if(studyTypes.includes('Systematic review'))filters.push('Include systematic review / meta-analysis filter');
+    stypeInstructions=`- Study type filter: ${stypeLabel}. ${filters.join('. ')}.`;
+  } else {
+    stypeInstructions='- No study type restriction.';
+  }
+
+  prompt=`You are an expert medical librarian specializing in systematic review search strategies.
+
+Study: "${v}"
+
+Generate a comprehensive PICOT-based search strategy for databases: ${dl}.
+
+IMPORTANT: Respond with a single valid JSON object only. No markdown, no explanation, no text before or after — raw JSON only.
+
+{
+  "picot": {
+    "P": "brief population description",
+    "I": "brief intervention description",
+    "C": "brief comparator description (write 'Not applicable' if none)",
+    "O": "brief outcome description",
+    "T": "study type and time frame"
+  },
+  "terms": {
+    "P": { "mesh": ["MeSH term 1", "MeSH term 2"], "tiab": ["keyword", "synonym", "abbreviation"] },
+    "I": { "mesh": ["..."], "tiab": ["..."] },
+    "C": { "mesh": ["..."], "tiab": ["..."] },
+    "O": { "mesh": ["..."], "tiab": ["..."] },
+    "T": { "mesh": ["..."], "tiab": ["..."] }
+  },
+  "queries": {
+    "PubMed": "complete PubMed query with proper syntax",
+    "Embase": "complete Embase query with /exp and :ti,ab",
+    "Cochrane": "complete Cochrane CENTRAL query",
+    "Scopus": "complete Scopus query using TITLE-ABS-KEY()",
+    "Web of Science": "complete WoS query using TS=()"
+  }
+}
+
+Rules:
+- Generate: ${tl}
+- Only include queries for: ${dl}
+- Use standard NLM MeSH headings; include synonyms, brand names, abbreviations in tiab arrays
+- ${stypeInstructions}
+- ${dateInstructions}
+- Queries must be professional-grade, matching Cochrane systematic review standards
+- Each query must be complete and ready to paste directly into the respective database
+- Return ONLY the raw JSON object`;
+
+  document.getElementById('promptTxt').textContent=prompt;
+  document.getElementById('promptArea').style.display='block';
+  document.getElementById('promptArea').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── COPY PROMPT ── */
+function copyPrompt(){
+  navigator.clipboard.writeText(prompt).then(()=>{
+    const b=document.getElementById('cpBtn'),o=b.innerHTML;
+    b.innerHTML='✓ Copied!';b.classList.add('ok');
+    setTimeout(()=>{b.innerHTML=o;b.classList.remove('ok')},2000);
+  });
+}
+
+/* ── PARSE & RENDER ── */
+function parseRender(){
+  const raw=document.getElementById('jsonIn').value.trim();
+  clearErr();
+  if(!raw){showErr("Please paste Claude's JSON response first.");return}
+  try{
+    const c=raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/,'').trim();
+    results=JSON.parse(c);
+    renderResults(results);
+  }catch(e){
+    showErr('Could not parse JSON. Make sure you copied the complete response from Claude. ('+e.message+')');
+  }
+}
+
+/* ── RENDER ── */
+function renderResults(d){
+  const picot=d.picot||d.pico||{};  // support both field names
+  const terms=d.terms||{};
+  const queries=d.queries||{};
+
+  const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Time / Study type'};
+  const pb={P:'pb-p',I:'pb-i',C:'pb-c',O:'pb-o',T:'pb-t'};
+  const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
+  const dc={'PubMed':'db-pm','Embase':'db-em','Cochrane':'db-co','Scopus':'db-sc','Web of Science':'db-ws'};
+  const sm=stype!=='tiab', st=stype!=='mesh';
+
+  const keys=Object.keys(picot).filter(k=>['P','I','C','O','T'].includes(k));
+
+  const rows=keys.map(k=>{
+    const t=terms[k]||{mesh:[],tiab:[]};
+    const mh=(t.mesh||[]).map(m=>`<span class="mc">${esc(m)}</span>`).join('');
+    const th=(t.tiab||[]).map(m=>`<span class="tc">${esc(m)}</span>`).join('');
+    return `<tr>
+      <td><span class="pb ${pb[k]||'pb-p'}">${k}</span>${pl[k]||k}</td>
+      <td style="color:var(--text2);font-size:12px">${esc(picot[k]||'')}</td>
+      ${sm?`<td>${mh||'<span style="color:var(--text3)">—</span>'}</td>`:''}
+      ${st?`<td>${th||'<span style="color:var(--text3)">—</span>'}</td>`:''}
+    </tr>`;
+  }).join('');
+
+  // render ALL selected dbs that have a query
+  const qcards=dbo.filter(db=>dbs.includes(db)).map(db=>{
+    const q=queries[db]||'No query generated for this database.';
+    return `<div class="qcard">
+      <div class="qcard-hdr">
+        <span class="dbl ${dc[db]}">${db}</span>
+        <button class="btn-s" id="cp-${db.replace(/\s/g,'-')}" onclick="cpQ('${db}')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy
+        </button>
+      </div>
+      <div class="qbody">${esc(q)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('res').innerHTML=`
+    <div class="divider"></div>
+    <div class="res-hdr">
+      <div class="res-title">Search strategy</div>
+      <div class="res-actions">
+        <button class="btn-s" id="cpAllBtn" onclick="cpAll()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy all queries
+        </button>
+        <button class="btn-w" id="wBtn" onclick="expWord()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Export to Word
+        </button>
+      </div>
+    </div>
+
+    <div class="tbl-wrap" style="margin-bottom:1.3rem">
+      <table class="pt">
+        <thead><tr>
+          <th>Element</th><th>Description</th>
+          ${sm?'<th>MeSH Terms</th>':''}
+          ${st?'<th>Title/Abstract Keywords</th>':''}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <div class="db-sec">
+      <div class="db-sec-lbl">Database queries (${dbs.length} database${dbs.length>1?'s':''})</div>
+      ${qcards}
+    </div>`;
+
+  document.getElementById('res').style.display='block';
+  document.getElementById('res').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── COPY ── */
+function cpQ(db){
+  if(!results)return;
+  const q=(results.queries||{})[db]||'';
+  navigator.clipboard.writeText(q).then(()=>{
+    const b=document.getElementById('cp-'+db.replace(/\s/g,'-')),o=b.innerHTML;
+    b.innerHTML='✓ Copied';b.classList.add('ok');
+    setTimeout(()=>{b.innerHTML=o;b.classList.remove('ok')},2000);
+  });
+}
+
+function cpAll(){
+  if(!results)return;
+  const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
+  const text=dbo.filter(db=>dbs.includes(db))
+    .map(db=>`=== ${db} ===\n${(results.queries||{})[db]||''}`)
+    .join('\n\n');
+  navigator.clipboard.writeText(text).then(()=>{
+    const b=document.getElementById('cpAllBtn'),o=b.innerHTML;
+    b.innerHTML='✓ Copied all';b.classList.add('ok');
+    setTimeout(()=>{b.innerHTML=o;b.classList.remove('ok')},2000);
+  });
+}
+
+/* ── EXPORT WORD ── */
+async function expWord(){
+  if(!results||!window.docx)return;
+  const btn=document.getElementById('wBtn');
+  btn.disabled=true;btn.innerHTML='<div class="spin-d"></div><span>Exporting...</span>';
+  try{
+    const{Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,
+          BorderStyle,WidthType,ShadingType,HeadingLevel,VerticalAlign}=window.docx;
+
+    const mb=c=>({style:BorderStyle.SINGLE,size:4,color:c});
+    const bdr={top:mb('334155'),bottom:mb('334155'),left:mb('334155'),right:mb('334155')};
+    const hbdr={top:mb('1E40AF'),bottom:mb('1E40AF'),left:mb('1E40AF'),right:mb('1E40AF')};
+    const hc=(t,w)=>new TableCell({borders:hbdr,width:{size:w,type:WidthType.DXA},shading:{fill:'1E3A8A',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({children:[new TextRun({text:t,bold:true,color:'FFFFFF',font:'Calibri',size:22})]})]});
+    const bc=(t,w,it,mn,sh)=>new TableCell({borders:bdr,width:{size:w,type:WidthType.DXA},shading:{fill:sh?'F1F5F9':'FFFFFF',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.TOP,children:[new Paragraph({children:[new TextRun({text:t||'',font:mn?'Courier New':'Calibri',size:20,italics:!!it})]})]});
+
+    const picot=results.picot||results.pico||{};
+    const terms=results.terms||{};
+    const queries=results.queries||{};
+    const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Time / Study type'};
+    const sm=stype!=='tiab', st2=stype!=='mesh';
+    const keys=Object.keys(picot).filter(k=>['P','I','C','O','T'].includes(k));
+
+    let cols,hdrs;
+    if(sm&&st2){cols=[900,1800,2500,2300];hdrs=['Element','Description','MeSH Terms','Title/Abstract Keywords']}
+    else if(sm){cols=[900,2100,4000];hdrs=['Element','Description','MeSH Terms']}
+    else{cols=[900,2100,4000];hdrs=['Element','Description','Title/Abstract Keywords']}
+
+    const ptbl=new Table({
+      width:{size:cols.reduce((a,b)=>a+b,0),type:WidthType.DXA},columnWidths:cols,
+      rows:[
+        new TableRow({children:hdrs.map((h,i)=>hc(h,cols[i]))}),
+        ...keys.map((k,i)=>{
+          const t=terms[k]||{mesh:[],tiab:[]};const sh=i%2===1;
+          const cs=[bc(`${k} — ${pl[k]||k}`,cols[0],false,false,sh),bc(picot[k]||'',cols[1],false,false,sh)];
+          if(sm)cs.push(bc((t.mesh||[]).join('; '),cols[cs.length],true,false,sh));
+          if(st2)cs.push(bc((t.tiab||[]).join('; '),cols[cs.length],false,true,sh));
+          return new TableRow({children:cs});
+        })
+      ]
+    });
+
+    const qc=[1400,6100];
+    const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
+    const qtbl=new Table({
+      width:{size:7500,type:WidthType.DXA},columnWidths:qc,
+      rows:[
+        new TableRow({children:[hc('Database',qc[0]),hc('Search Query',qc[1])]}),
+        ...dbo.filter(db=>dbs.includes(db)).map((db,i)=>
+          new TableRow({children:[bc(db,qc[0],false,false,i%2===1),bc(queries[db]||'',qc[1],false,true,i%2===1)]})
+        )
+      ]
+    });
+
+    const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    const ts={both:'MeSH + Title/Abstract',mesh:'MeSH terms only',tiab:'Title/Abstract only'}[stype];
+
+    const useDate=document.getElementById('useDateRange').checked;
+    let dateLabel='Inception to today (no restriction)';
+    if(useDate){
+      const from=document.getElementById('dateFrom').value;
+      const to=document.getElementById('dateTo').value;
+      const fd=d=>{const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+      dateLabel=`${fd(from)} — ${fd(to)}`;
+    }
+
+    const doc=new Document({
+      styles:{default:{document:{run:{font:'Calibri',size:24}}},paragraphStyles:[
+        {id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:36,bold:true,font:'Calibri',color:'1E3A8A'},paragraph:{spacing:{before:240,after:160},outlineLevel:0}},
+        {id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:26,bold:true,font:'Calibri',color:'1D4ED8'},paragraph:{spacing:{before:320,after:120},outlineLevel:1}}
+      ]},
+      sections:[{
+        properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1080,bottom:1440,left:1080}}},
+        children:[
+          new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Systematic Review Search Strategy',font:'Calibri',size:36,bold:true,color:'1E3A8A'})]}),
+          new Paragraph({spacing:{after:60},children:[new TextRun({text:'Study objective:  ',bold:true,font:'Calibri',size:22}),new TextRun({text:study,font:'Calibri',size:22})]}),
+          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Date generated:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:today,font:'Calibri',size:20,color:'64748B'})]}),
+          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Search term type:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:ts,font:'Calibri',size:20,color:'64748B'})]}),
+          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Study type:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:studyTypes.join(', '),font:'Calibri',size:20,color:'64748B'})]}),
+          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Date range:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:dateLabel,font:'Calibri',size:20,color:'64748B'})]}),
+          new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'PICOT Framework & Search Terms',font:'Calibri',size:26,bold:true,color:'1D4ED8'})]}),
+          ptbl,
+          new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Database Search Queries',font:'Calibri',size:26,bold:true,color:'1D4ED8'})]}),
+          new Paragraph({spacing:{after:120},children:[new TextRun({text:`Queries for ${dbs.length} database(s): ${dbs.join(', ')}.`,font:'Calibri',size:20,color:'64748B',italics:true})]}),
+          qtbl,
+          new Paragraph({spacing:{before:400},children:[new TextRun({text:'Note: Generated strategies should be reviewed and validated by a medical librarian before use.',font:'Calibri',size:18,color:'94A3B8',italics:true})]})
+        ]
+      }]
+    });
+
+    const buf=await Packer.toBuffer(doc);
+    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`search_strategy_${new Date().toISOString().slice(0,10)}.docx`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){
+    showErr('Word export failed: '+e.message);
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export to Word';
+  }
+}
+
+function showErr(m){document.getElementById('errBox').innerHTML=`<div class="err">${esc(m)}</div>`}
+function clearErr(){document.getElementById('errBox').innerHTML=''}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+</script>
+</body>
+</html>
