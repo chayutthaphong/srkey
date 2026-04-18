@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SRKey — Systematic Review Search Strategy Generator</title>
+<title>SRKey v2.0 — Systematic Review Search Strategy Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js" onerror="docxLoadErr=true"></script>
 <script>
 var docxLoadErr=false;
-// Fallback to jsdelivr if unpkg fails
 window.addEventListener('load',function(){
   if(!window.docx){
     var s=document.createElement('script');
@@ -22,314 +21,437 @@ window.addEventListener('load',function(){
 </script>
 <style>
 :root{
-  --bg:#0d0f12;--bg2:#13161b;--bg3:#1a1e25;--bg4:#21262f;
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
-  --text:#e8eaed;--text2:#8b93a0;--text3:#555e6b;
-  --accent:#4f8ef7;--accent2:#3a72d8;
-  --abg:rgba(79,142,247,.1);--abdr:rgba(79,142,247,.25);
-  --green:#3ecf7a;--gbg:rgba(62,207,122,.1);--gbdr:rgba(62,207,122,.25);
-  --amber:#f5a623;--ybg:rgba(245,166,35,.1);--ybdr:rgba(245,166,35,.25);
-  --red:#f87171;--rbg:rgba(238,85,85,.1);--rbdr:rgba(238,85,85,.25);
-  --purple:#a78bfa;--pbg:rgba(167,139,250,.1);--pddr:rgba(167,139,250,.25);
-  --teal:#2dd4bf;--tbg:rgba(45,212,191,.1);--tbdr:rgba(45,212,191,.25);
-  --r:8px;--rl:12px;
-  --sans:'Outfit',sans-serif;--serif:'DM Serif Display',serif;--mono:'DM Mono',monospace;
+  --bg:#f8f7f4;--bg2:#ffffff;--bg3:#f3f2ef;--bg4:#ebe9e4;
+  --border:#e2dfd8;--border2:#d0cdc5;--border3:#b8b4ac;
+  --text:#1a1916;--text2:#5c5852;--text3:#9c9890;
+  --accent:#1a56db;--accent2:#1347c0;
+  --abg:#eff4ff;--abdr:#bfcffd;
+  --green:#057a55;--gbg:#ecfdf3;--gbdr:#84e1bc;
+  --amber:#92400e;--ybg:#fffbeb;--ybdr:#fcd34d;
+  --red:#9b1c1c;--rbg:#fef2f2;--rbdr:#fca5a5;
+  --purple:#5521b5;--pbg:#f5f3ff;--pddr:#c4b5fd;
+  --teal:#0e7490;--tbg:#ecfeff;--tbdr:#a5f3fc;
+  --warning-bg:#fffbeb;--warning-border:#f59e0b;--warning-text:#92400e;
+  --r:6px;--rl:10px;
+  --sans:'Inter',sans-serif;--serif:'Lora',serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh}
 
-nav{position:sticky;top:0;z-index:100;background:rgba(13,15,18,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(248,247,244,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:54px;box-shadow:var(--shadow)}
 .logo{display:flex;align-items:center;gap:10px}
-.logomark{width:30px;height:30px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:#fff;font-style:italic}
-.logotitle{font-family:var(--serif);font-size:20px;letter-spacing:-.01em}
+.logomark{width:28px;height:28px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;color:#fff;font-style:italic;font-weight:600}
+.logotitle{font-family:var(--serif);font-size:18px;letter-spacing:-.01em;color:var(--text);font-weight:600}
 .logotitle span{color:var(--accent)}
-.free-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr);letter-spacing:.04em}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-badge{font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr);letter-spacing:.03em}
+.btn-guide{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-family:var(--sans);cursor:pointer;transition:all .15s}
+.btn-guide:hover{border-color:var(--border3);color:var(--text);background:var(--bg3)}
 
-.hero{padding:3.5rem 2rem 1.5rem;text-align:center;max-width:680px;margin:0 auto}
-.hero h1{font-family:var(--serif);font-size:2.6rem;font-weight:400;line-height:1.2;letter-spacing:-.02em;margin-bottom:.8rem}
+/* ── HERO ── */
+.hero{padding:3rem 2rem 2rem;text-align:center;max-width:680px;margin:0 auto}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.hero h1{font-family:var(--serif);font-size:2.4rem;font-weight:600;line-height:1.2;letter-spacing:-.02em;margin-bottom:.75rem;color:var(--text)}
 .hero h1 em{color:var(--accent);font-style:italic}
-.hero p{font-size:.95rem;color:var(--text2);max-width:500px;margin:0 auto;font-weight:300}
+.hero p{font-size:.95rem;color:var(--text2);max-width:480px;margin:0 auto;font-weight:400;line-height:1.65}
 
-.how{max-width:900px;margin:0 auto 1.8rem;padding:0 2rem}
-.steps{display:flex}
-.step{flex:1;background:var(--bg2);border:1px solid var(--border);padding:.9rem 1rem;display:flex;align-items:flex-start;gap:10px}
-.step:first-child{border-radius:var(--rl) 0 0 var(--rl)}
-.step:last-child{border-radius:0 var(--rl) var(--rl) 0}
-.step:not(:last-child){border-right:none}
-.snum{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-top:3px}
-.stxt{font-size:11.5px;color:var(--text2);line-height:1.45}
-.stxt strong{color:var(--text);font-weight:500;display:block;margin-bottom:1px;font-size:12px}
+/* ── WORKFLOW STEPS ── */
+.workflow{max-width:900px;margin:0 auto 2rem;padding:0 2rem}
+.workflow-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+.wstep{padding:.85rem 1rem;display:flex;align-items:flex-start;gap:9px;border-right:1px solid var(--border)}
+.wstep:last-child{border-right:none}
+.wnum{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;margin-top:2px}
+.wtxt{font-size:11.5px;color:var(--text2);line-height:1.4}
+.wtxt strong{color:var(--text);font-weight:600;display:block;margin-bottom:1px;font-size:12px}
 
-.main{max-width:900px;margin:0 auto;padding:0 2rem 4rem}
+/* ── MAIN ── */
+.main{max-width:900px;margin:0 auto;padding:0 2rem 5rem}
 
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:.9rem;animation:fadeIn .35s ease}
-.card-hdr{padding:.85rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.cnum{width:20px;height:20px;border-radius:50%;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ctitle{font-size:13px;font-weight:500}
-.card-body{padding:1.1rem 1.4rem}
+/* ── SECTION DIVIDER ── */
+.section-divider{display:flex;align-items:center;gap:.75rem;margin:1.75rem 0 1rem}
+.section-divider-line{flex:1;height:1px;background:var(--border)}
+.section-divider-label{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);white-space:nowrap}
 
-textarea,input[type=date]{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:9px 13px;color:var(--text);font-family:var(--sans);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+/* ── CARD ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:.75rem;box-shadow:var(--shadow);animation:fadeIn .3s ease}
+.card-hdr{padding:.8rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg3)}
+.cnum{width:20px;height:20px;border-radius:50%;background:var(--accent);font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctitle{font-size:13px;font-weight:600;color:var(--text)}
+.csub{font-size:11.5px;font-weight:400;color:var(--text3);margin-left:4px}
+.card-body{padding:1.1rem 1.3rem}
+
+/* ── INPUTS ── */
+textarea,input[type=date],input[type=text]{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:13.5px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
 textarea{resize:vertical;line-height:1.6}
-input[type=date]{height:38px;cursor:pointer;color-scheme:dark}
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
-textarea:focus,input[type=date]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,142,247,.1)}
+input[type=date]{height:36px;cursor:pointer;color-scheme:light}
+input[type=date]::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer}
+textarea:focus,input[type=date]:focus,input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:var(--bg2)}
 ::placeholder{color:var(--text3)}
 
-/* TWO-COL GRID */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
-@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+/* ── FIELD LABEL ── */
+.flabel{font-size:11.5px;font-weight:600;color:var(--text2);letter-spacing:.03em;margin-bottom:5px;text-transform:uppercase}
+.fdesc{font-size:12px;color:var(--text3);margin-top:4px;line-height:1.5}
 
-/* PILLS */
-.pills{display:flex;flex-wrap:wrap;gap:6px}
-.pill{padding:5px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;font-family:var(--sans);user-select:none}
-.pill:hover:not(.on){background:var(--bg4);color:var(--text)}
+/* ── PILLS ── */
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pill{padding:5px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12.5px;cursor:pointer;transition:all .15s;font-family:var(--sans);user-select:none;font-weight:400}
+.pill:hover:not(.on){background:var(--bg4);color:var(--text);border-color:var(--border3)}
 .pill.on{background:var(--abg);border-color:var(--abdr);color:var(--accent);font-weight:500}
-.pill.db.on{background:var(--gbg);border-color:var(--gbdr);color:var(--green)}
-.pill.stype.on{background:var(--tbg);border-color:var(--tbdr);color:var(--teal)}
+.pill.db.on{background:var(--gbg);border-color:var(--gbdr);color:var(--green);font-weight:500}
+.pill.stype.on{background:var(--tbg);border-color:var(--tbdr);color:var(--teal);font-weight:500}
+.pill.qmode.on{background:var(--pbg);border-color:var(--pddr);color:var(--purple);font-weight:500}
+.pill.depth.on{background:var(--ybg);border-color:var(--ybdr);color:#713f12;font-weight:500}
+.pill.depth[data-depth="quick"].on{background:var(--rbg);border-color:var(--rbdr);color:var(--red);font-weight:500}
 
-/* SECTION LABEL */
-.slabel{font-size:11.5px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+/* ── CHECKBOX ROW ── */
+.check-row{display:flex;align-items:center;gap:8px}
+.check-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.check-row label{font-size:13px;color:var(--text2);cursor:pointer}
 
-/* DATE ROW */
-.date-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
-.date-sep{color:var(--text3);font-size:13px;text-align:center}
-.date-field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
-.date-check{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.date-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
-.date-check label{font-size:13px;color:var(--text2);cursor:pointer}
+/* ── DATE ROW ── */
+.date-row{display:grid;grid-template-columns:1fr 20px 1fr;align-items:center;gap:8px;margin-top:10px}
+.date-sep{color:var(--text3);font-size:14px;text-align:center;font-weight:300}
+.date-field label{font-size:11.5px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500}
 
-/* STUDY TYPE CHECKBOXES */
-.stype-grid{display:flex;flex-wrap:wrap;gap:6px}
+/* ── OPTIONAL PICOTS GRID ── */
+.picot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.picot-field{}
+.picot-field label{font-size:11.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.picot-badge-sm{font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;font-family:var(--mono)}
+.pb-sm-p{background:var(--pbg);color:var(--purple);border:1px solid var(--pddr)}
+.pb-sm-i{background:var(--abg);color:var(--accent);border:1px solid var(--abdr)}
+.pb-sm-c{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+.pb-sm-o{background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
+.pb-sm-t{background:var(--tbg);color:var(--teal);border:1px solid var(--tbdr)}
+.pb-sm-n{background:var(--rbg);color:var(--red);border:1px solid var(--rbdr)}
+.pb-sm-s{background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7}
+.not-field{grid-column:1/-1}
 
-/* BUTTONS */
-.btn-p{display:inline-flex;align-items:center;gap:8px;padding:12px 32px;border-radius:var(--r);background:var(--accent);color:#fff;font-weight:500;font-size:15px;cursor:pointer;border:none;font-family:var(--sans);transition:background .15s,transform .1s}
-.btn-p:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-p:active{transform:translateY(0)}
-.btn-p.sm{padding:9px 20px;font-size:13.5px}
-.btn-claude{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--r);background:#b8601e;color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;border:none;font-family:var(--sans);transition:background .15s,transform .1s;text-decoration:none}
-.btn-claude:hover{background:#a05318;transform:translateY(-1px)}
-.btn-s{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:12.5px;cursor:pointer;border:1px solid var(--border2);font-family:var(--sans);transition:all .15s}
-.btn-s:hover:not(:disabled){background:var(--bg4);color:var(--text)}
-.btn-s:disabled{opacity:.35;cursor:not-allowed}
-.btn-s.ok{background:var(--gbg);border-color:var(--gbdr);color:var(--green)}
-.btn-w{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:rgba(37,99,235,.12);color:#93bbfc;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid rgba(37,99,235,.28);font-family:var(--sans);transition:all .15s}
-.btn-w:hover:not(:disabled){background:rgba(37,99,235,.2);color:#b5d0ff}
-.btn-w:disabled{opacity:.35;cursor:not-allowed}
+/* ── BUTTONS ── */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:11px 28px;border-radius:var(--r);background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;border:none;font-family:var(--sans);transition:background .15s,transform .1s,box-shadow .15s;box-shadow:0 2px 8px rgba(26,86,219,.3)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,86,219,.35)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary.sm{padding:8px 18px;font-size:13px}
+.btn-claude{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r);background:#c2410c;color:#fff;font-weight:500;font-size:13px;cursor:pointer;border:none;font-family:var(--sans);transition:all .15s;text-decoration:none}
+.btn-claude:hover{background:#9a3412;transform:translateY(-1px)}
+.btn-sec{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:var(--bg2);color:var(--text2);font-size:12.5px;cursor:pointer;border:1px solid var(--border2);font-family:var(--sans);transition:all .15s}
+.btn-sec:hover:not(:disabled){background:var(--bg3);color:var(--text);border-color:var(--border3)}
+.btn-sec:disabled{opacity:.4;cursor:not-allowed}
+.btn-sec.ok{background:var(--gbg);border-color:var(--gbdr);color:var(--green)}
+.btn-word{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:#1e40af;color:#fff;font-size:12.5px;font-weight:500;cursor:pointer;border:none;font-family:var(--sans);transition:all .15s}
+.btn-word:hover:not(:disabled){background:#1d3a9e}
+.btn-word:disabled{opacity:.4;cursor:not-allowed}
+.btn-log{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);background:var(--pbg);color:var(--purple);font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--pddr);font-family:var(--sans);transition:all .15s}
+.btn-log:hover:not(:disabled){background:#ede9fe}
+.btn-log:disabled{opacity:.4;cursor:not-allowed}
 
-/* PROMPT */
-.prompt-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;animation:fadeIn .35s ease}
-.prompt-hdr{padding:11px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--bg3)}
-.prompt-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
-.badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
-.badge.g{background:var(--gbg);color:var(--green);border-color:var(--gbdr)}
-.prompt-body{padding:14px 15px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:240px;overflow-y:auto}
+/* ── SPINNER ── */
+.spin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
+.spin-dark{width:13px;height:13px;border-radius:50%;border:2px solid rgba(26,86,219,.2);border-top-color:var(--accent);animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── PROMPT BOX ── */
+.prompt-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+.prompt-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--bg3)}
+.prompt-title{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px;color:var(--text)}
+.step-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
+.step-badge.g{background:var(--gbg);color:var(--green);border-color:var(--gbdr)}
+.prompt-body{padding:13px 14px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;background:var(--bg3)}
 .prompt-body::-webkit-scrollbar{width:4px}
 .prompt-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.prompt-foot{padding:10px 15px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--bg3)}
-.hint{font-size:11.5px;color:var(--text3)}
+.prompt-foot{padding:9px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg3)}
+.hint{font-size:11.5px;color:var(--text3);line-height:1.5}
 
-/* PASTE */
-.paste-wrap{margin-top:.9rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;animation:fadeIn .35s ease}
-.paste-hdr{padding:11px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg3)}
-.paste-body{padding:14px 15px}
-.paste-body textarea{font-family:var(--mono);font-size:12px;min-height:100px}
-.parse-row{display:flex;justify-content:flex-end;gap:8px;margin-top:9px}
+/* ── PASTE BOX ── */
+.paste-wrap{margin-top:.75rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+.paste-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg3)}
+.paste-body{padding:13px 14px}
+.paste-body textarea{font-family:var(--mono);font-size:11.5px;min-height:95px;background:var(--bg3)}
+.parse-row{display:flex;justify-content:flex-end;gap:7px;margin-top:8px}
 
-/* RESULTS */
-#res{margin-top:1.4rem;animation:fadeIn .35s ease}
-.res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
-.res-title{font-family:var(--serif);font-size:1.35rem}
-.res-actions{display:flex;gap:7px;flex-wrap:wrap}
+/* ── RESULTS ── */
+#res{margin-top:1.5rem;animation:fadeIn .3s ease}
 
-/* PICOT TABLE */
-.tbl-wrap{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border)}
+/* ── WARNING BANNER ── */
+.warning-banner{background:var(--warning-bg);border:1.5px solid var(--warning-border);border-radius:var(--rl);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:1rem}
+.warning-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--warning-border);display:flex;align-items:center;justify-content:center;margin-top:1px}
+.warning-icon svg{width:12px;height:12px;stroke:#fff;stroke-width:3}
+.warning-text strong{font-size:13px;font-weight:700;color:var(--warning-text);display:block;margin-bottom:2px}
+.warning-text p{font-size:12.5px;color:var(--amber);line-height:1.5}
+
+/* ── RES HEADER ── */
+.res-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.res-title{font-family:var(--serif);font-size:1.3rem;font-weight:600;color:var(--text)}
+.res-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── PICOTS TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border);box-shadow:var(--shadow)}
 table.pt{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2)}
-table.pt th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;background:var(--bg3);border-bottom:1px solid var(--border2)}
-table.pt td{padding:10px 14px;vertical-align:top;border-bottom:1px solid var(--border);line-height:1.5}
+table.pt th{padding:9px 13px;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.07em;color:var(--text2);text-transform:uppercase;background:var(--bg3);border-bottom:1px solid var(--border2)}
+table.pt td{padding:10px 13px;vertical-align:top;border-bottom:1px solid var(--border);line-height:1.5}
 table.pt tr:last-child td{border-bottom:none}
-table.pt tr:hover td{background:rgba(255,255,255,.015)}
-.pb{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;margin-right:5px;font-family:var(--mono)}
+table.pt tr:hover td{background:var(--abg)}
+.pb{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;font-family:var(--mono)}
 .pb-p{background:var(--pbg);color:var(--purple);border:1px solid var(--pddr)}
 .pb-i{background:var(--abg);color:var(--accent);border:1px solid var(--abdr)}
 .pb-c{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
 .pb-o{background:var(--ybg);color:var(--amber);border:1px solid var(--ybdr)}
 .pb-t{background:var(--tbg);color:var(--teal);border:1px solid var(--tbdr)}
-.mc{display:inline-block;font-style:italic;font-size:11.5px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 6px;margin:2px 2px 2px 0}
-.tc{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 6px;margin:2px 2px 2px 0}
+.pb-s{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+.pb-s{background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7}
+.mc{display:inline-block;font-style:italic;font-size:11.5px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 6px;margin:1px 2px 1px 0}
+.tc{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 6px;margin:1px 2px 1px 0}
 
-/* DB QUERY TABS */
-.db-sec{margin-top:1.3rem}
-.db-sec-lbl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:9px}
-.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:7px;transition:border-color .2s}
-.qcard:hover{border-color:var(--border2)}
-.qcard-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--bg3)}
-.dbl{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:var(--mono)}
-.db-pm{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
-.db-em{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+/* ── DB QUERY CARDS ── */
+.db-sec{margin-top:1.2rem}
+.db-sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:6px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.qcard:hover{box-shadow:var(--shadow-md)}
+.qcard-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.dbl{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;font-family:var(--mono)}
+.db-pm{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5}
+.db-em{background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
 .db-co{background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
 .db-sc{background:var(--abg);color:var(--accent);border:1px solid var(--abdr)}
 .db-ws{background:var(--pbg);color:var(--purple);border:1px solid var(--pddr)}
-.qbody{padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.75;word-break:break-word;color:var(--text)}
+.db-gs{background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7}
+.qbody{padding:11px 13px;font-family:var(--mono);font-size:11.5px;line-height:1.75;word-break:break-word;color:var(--text)}
+.btn-db-link{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--text3);font-size:11px;font-family:var(--sans);text-decoration:none;transition:all .15s}
+.btn-db-link:hover{background:var(--bg4);color:var(--text);border-color:var(--border3)}
 
-.err{background:var(--rbg);border:1px solid var(--rbdr);border-radius:var(--r);padding:11px 15px;color:var(--red);font-size:13px;margin-top:9px}
-.divider{height:1px;background:var(--border);margin:1.3rem 0}
+/* ── SEARCH LOGIC SECTION ── */
+.logic-section{margin-top:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shadow)}
+.logic-hdr{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;gap:8px}
+.logic-hdr-icon{width:22px;height:22px;border-radius:5px;background:var(--abg);border:1px solid var(--abdr);display:flex;align-items:center;justify-content:center}
+.logic-body{padding:16px}
+.logic-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.logic-step:last-child{margin-bottom:0}
+.logic-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.logic-content{flex:1}
+.logic-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.logic-desc{font-size:12.5px;color:var(--text2);line-height:1.6}
+.logic-formula{margin-top:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.7}
+.logic-and{color:var(--accent);font-weight:700}
+.logic-or{color:var(--green);font-weight:700}
+.logic-not{color:var(--red);font-weight:700}
 
-footer{border-top:1px solid var(--border);padding:1.4rem 2rem;text-align:center;color:var(--text3);font-size:11.5px;max-width:900px;margin:0 auto}
-footer a{color:var(--text2);text-decoration:none}
-footer a:hover{color:var(--text)}
+/* ── ERROR ── */
+.err{background:var(--rbg);border:1px solid var(--rbdr);border-radius:var(--r);padding:10px 14px;color:var(--red);font-size:13px;margin-top:8px}
 
-.spin-d{width:13px;height:13px;border-radius:50%;border:2px solid rgba(79,142,247,.2);border-top-color:var(--accent);animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:1.2rem 0}
 
-/* README MODAL */
-.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;animation:fadeOverlay .2s ease}
-@keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:720px;margin:auto;animation:slideUp .25s ease;position:relative}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.modal-hdr{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:16px 16px 0 0;z-index:1}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:740px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:slideUp .22s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);border-radius:14px 14px 0 0;z-index:1}
 .modal-hdr-left{display:flex;align-items:center;gap:10px}
-.modal-hdr-title{font-family:var(--serif);font-size:1.2rem}
-.modal-version{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--abg);color:var(--accent);border:1px solid var(--abdr);font-family:var(--mono)}
-.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;transition:all .15s;flex-shrink:0}
+.modal-hdr-title{font-family:var(--serif);font-size:1.15rem;font-weight:600}
+.modal-ver{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--abg);color:var(--accent);border:1px solid var(--abdr);font-family:var(--mono)}
+.modal-close{width:26px;height:26px;border-radius:5px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
 .modal-close:hover{background:var(--bg4);color:var(--text)}
-.modal-body{padding:1.5rem;overflow-y:auto;max-height:calc(90vh - 60px)}
+.modal-body{padding:1.3rem;max-height:82vh;overflow-y:auto}
 .modal-body::-webkit-scrollbar{width:5px}
 .modal-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* README TYPOGRAPHY */
-.readme h2{font-family:var(--serif);font-size:1.25rem;font-weight:400;color:var(--text);margin:1.6rem 0 .6rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+/* ── README TYPOGRAPHY ── */
+.readme h2{font-family:var(--serif);font-size:1.15rem;font-weight:600;color:var(--text);margin:1.5rem 0 .5rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
 .readme h2:first-child{margin-top:0}
-.readme h3{font-size:13px;font-weight:600;color:var(--text);margin:1.1rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
-.readme p{font-size:13.5px;color:var(--text2);margin-bottom:.7rem;line-height:1.65}
-.readme ul,.readme ol{padding-left:1.2rem;margin-bottom:.8rem}
-.readme li{font-size:13.5px;color:var(--text2);margin-bottom:.25rem;line-height:1.6}
-.readme li strong,.readme p strong{color:var(--text);font-weight:500}
+.readme h3{font-size:12.5px;font-weight:700;color:var(--text);margin:.9rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
+.readme p{font-size:13px;color:var(--text2);margin-bottom:.6rem;line-height:1.65}
+.readme ul,.readme ol{padding-left:1.2rem;margin-bottom:.7rem}
+.readme li{font-size:13px;color:var(--text2);margin-bottom:.2rem;line-height:1.6}
+.readme li strong,.readme p strong{color:var(--text);font-weight:600}
 .readme code{font-family:var(--mono);font-size:11.5px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--accent)}
 .readme a{color:var(--accent);text-decoration:none}
 .readme a:hover{text-decoration:underline}
+.readme-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:.9rem;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.readme-tbl th{background:var(--bg3);padding:7px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border2)}
+.readme-tbl td{padding:7px 11px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.readme-tbl tr:last-child td{border-bottom:none}
+.readme-tbl tr:hover td{background:var(--abg)}
 
-/* PICOT TABLE IN README */
-.readme-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
-.readme-table th{background:var(--bg3);padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border2)}
-.readme-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
-.readme-table tr:last-child td{border-bottom:none}
-.readme-table tr:hover td{background:rgba(255,255,255,.015)}
+/* GUIDE STEPS */
+.guide-steps{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:.9rem}
+.guide-step{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .9rem;display:flex;gap:9px;align-items:flex-start}
+.gnum{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.gtxt{font-size:12px;color:var(--text2);line-height:1.45}
+.gtxt strong{color:var(--text);font-weight:600;display:block;margin-bottom:1px}
 
-/* STEP CARDS IN README */
-.readme-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
-@media(max-width:480px){.readme-steps{grid-template-columns:1fr}}
-.readme-step{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;display:flex;gap:10px;align-items:flex-start}
-.readme-step-num{width:20px;height:20px;border-radius:50%;background:var(--abg);border:1px solid var(--abdr);font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.readme-step-txt{font-size:12.5px;color:var(--text2);line-height:1.5}
-.readme-step-txt strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px}
+/* CHANGELOG */
+.cl-item{margin-bottom:.9rem;padding-bottom:.9rem;border-bottom:1px solid var(--border)}
+.cl-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.cl-ver{display:flex;align-items:center;gap:7px;margin-bottom:.3rem}
+.cl-tag{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--accent)}
+.cl-date{font-size:11.5px;color:var(--text3)}
+.cl-new{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
 
-/* CHANGELOG ITEMS */
-.changelog-item{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
-.changelog-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.changelog-ver{display:inline-flex;align-items:center;gap:8px;margin-bottom:.4rem}
-.changelog-tag{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)}
-.changelog-date{font-size:11.5px;color:var(--text3)}
-.changelog-new{font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)}
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;color:var(--text3);font-size:11.5px;max-width:900px;margin:0 auto}
+footer a{color:var(--text2);text-decoration:none}
+footer a:hover{color:var(--text)}
 
-/* README BTN IN NAV */
-.btn-readme{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s}
-.btn-readme:hover{border-color:var(--border2);background:var(--bg3);color:var(--text)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:640px){
-  .hero h1{font-size:2rem}
-  nav,.main,.how{padding-left:1rem;padding-right:1rem}
-  .steps{flex-direction:column}
-  .step:first-child{border-radius:var(--rl) var(--rl) 0 0}
-  .step:last-child{border-radius:0 0 var(--rl) var(--rl)}
-  .step:not(:last-child){border-right:1px solid var(--border);border-bottom:none}
+  .hero h1{font-size:1.9rem}
+  nav,.main,.workflow{padding-left:1rem;padding-right:1rem}
+  .workflow-inner{grid-template-columns:1fr 1fr}
+  .wstep:nth-child(2){border-right:none}
+  .wstep:nth-child(2),.wstep:nth-child(3){border-top:1px solid var(--border)}
+  .picot-grid{grid-template-columns:1fr}
+  .not-field{grid-column:auto}
   .date-row{grid-template-columns:1fr;gap:6px}
   .date-sep{display:none}
+  .guide-steps{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <div class="logo">
     <div class="logomark">S</div>
     <span class="logotitle">SR<span>Key</span></span>
   </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <button class="btn-readme" onclick="openReadme()">
+  <div class="nav-right">
+    <button class="btn-guide" onclick="openReadme()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      About & Guide
+      About &amp; Guide
     </button>
-    <span class="free-badge">Free</span>
+    <span class="nav-badge">Free — No API key</span>
   </div>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
+  <div class="hero-eyebrow">Systematic Review Tool</div>
   <h1>Generate <em>search strategies</em><br/>for systematic reviews</h1>
-  <p>PICOT-based search terms and database-ready queries using Claude AI — free via claude.ai.</p>
+  <p>Build PICOTS-based search terms and database-ready queries using Claude AI — free via claude.ai, no API key needed.</p>
 </div>
 
-<div class="how">
-  <div class="steps">
-    <div class="step"><div class="snum">1</div><div class="stxt"><strong>Fill in your study</strong>Enter objective &amp; PICOT options</div></div>
-    <div class="step"><div class="snum">2</div><div class="stxt"><strong>Copy → Claude.ai</strong>Paste the prompt and run</div></div>
-    <div class="step"><div class="snum">3</div><div class="stxt"><strong>Paste JSON back</strong>Copy Claude's full response</div></div>
-    <div class="step"><div class="snum">4</div><div class="stxt"><strong>Export to Word</strong>Download formatted .docx</div></div>
+<!-- REFERENCES STRIP -->
+<div style="max-width:900px;margin:0 auto .5rem;padding:0 2rem">
+  <div style="background:#eff4ff;border:1px solid #bfcffd;border-radius:8px;padding:10px 16px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;color:#1a56db;text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;margin-top:1px">Key references</span>
+    <div style="font-size:12px;color:#374151;line-height:1.6;flex:1;min-width:240px">
+      <a href="https://doi.org/10.1371/journal.pmed.1000100" target="_blank" rel="noopener" style="color:#1a56db;text-decoration:none">PRISMA 2009</a> ·
+      <a href="https://doi.org/10.1136/bmj.n71" target="_blank" rel="noopener" style="color:#1a56db;text-decoration:none">PRISMA 2020</a> ·
+      <a href="https://training.cochrane.org/handbook" target="_blank" rel="noopener" style="color:#1a56db;text-decoration:none">Cochrane Handbook (v6)</a> ·
+      <a href="https://doi.org/10.1002/jrsm.12" target="_blank" rel="noopener" style="color:#1a56db;text-decoration:none">Lefebvre et al. (search methods)</a>
+      <span style="color:#9ca3af;margin:0 4px">—</span>
+      <span style="color:#6b7280">Always follow reporting and searching standards for your review type.</span>
+    </div>
+  </div>
+</div>
+
+<!-- WORKFLOW -->
+<div class="workflow">
+  <div class="workflow-inner">
+    <div class="wstep"><div class="wnum">1</div><div class="wtxt"><strong>Configure</strong>Set PICOTS, databases &amp; options</div></div>
+    <div class="wstep"><div class="wnum">2</div><div class="wtxt"><strong>Copy → Claude.ai</strong>Paste the generated prompt and run</div></div>
+    <div class="wstep"><div class="wnum">3</div><div class="wtxt"><strong>Paste JSON back</strong>Copy Claude's full response here</div></div>
+    <div class="wstep"><div class="wnum">4</div><div class="wtxt"><strong>Export</strong>Download strategy &amp; search log (.docx)</div></div>
   </div>
 </div>
 
 <div class="main">
 
-  <!-- 1. Study -->
+  <!-- ─── SECTION: STUDY ─── -->
+  <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Study details</div><div class="section-divider-line"></div></div>
+
+  <!-- Card 1: Study -->
   <div class="card">
     <div class="card-hdr"><div class="cnum">1</div><div class="ctitle">Study title or research objective</div></div>
     <div class="card-body">
-      <textarea id="studyInput" rows="3" placeholder="e.g. Effectiveness of cytisine versus varenicline for smoking cessation in adults"></textarea>
+      <textarea id="studyInput" rows="3" placeholder="e.g. Effectiveness of cytisine versus varenicline for smoking cessation in adults with cardiovascular disease"></textarea>
+      <div class="fdesc">Be specific — include population, intervention, and comparator where possible for best results.</div>
     </div>
   </div>
 
-  <!-- 2. Study type (T in PICOT) -->
+  <!-- Card 2: Optional PICOTS -->
   <div class="card">
-    <div class="card-hdr"><div class="cnum">2</div><div class="ctitle">Study type <span style="color:var(--teal);font-size:12px;margin-left:4px">(T — Time &amp; Type of study)</span></div></div>
-    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem">
+    <div class="card-hdr">
+      <div class="cnum">2</div>
+      <div class="ctitle">Optional: Specify PICOTS elements manually</div>
+      <span class="csub">— leave blank to let AI infer from title</span>
+    </div>
+    <div class="card-body">
+      <div class="picot-grid">
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-p">P</span> Population</label>
+          <input type="text" id="picotP" placeholder="e.g. Adults with type 2 diabetes"/>
+        </div>
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-i">I</span> Intervention</label>
+          <input type="text" id="picotI" placeholder="e.g. SGLT-2 inhibitors"/>
+        </div>
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-c">C</span> Comparator</label>
+          <input type="text" id="picotC" placeholder="e.g. Placebo or standard care"/>
+        </div>
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-o">O</span> Outcome</label>
+          <input type="text" id="picotO" placeholder="e.g. HbA1c, cardiovascular events"/>
+        </div>
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-t">T</span> Timeframe</label>
+          <input type="text" id="picotT" placeholder="e.g. ≥6 months follow-up, 2000–present"/>
+        </div>
+        <div class="picot-field">
+          <label><span class="picot-badge-sm pb-sm-s" style="background:var(--gbg);color:var(--green);border:1px solid var(--gbdr)">S</span> Setting</label>
+          <input type="text" id="picotS" placeholder="e.g. Primary care, hospital, community, low-income countries"/>
+        </div>
+        <div class="picot-field not-field">
+          <label><span class="picot-badge-sm pb-sm-n">NOT</span> Exclude (NOT operator)</label>
+          <input type="text" id="picotNot" placeholder="e.g. animal studies, in vitro, case reports, paediatric"/>
+          <div class="fdesc">Terms to exclude from all queries using NOT operator.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- ─── SECTION: SEARCH OPTIONS ─── -->
+  <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Search options</div><div class="section-divider-line"></div></div>
+
+  <!-- Card 3: Study type -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">3</div><div class="ctitle">Study design &amp; date range<span class="csub"> — T (Timeframe) &amp; S (Setting) in PICOTS</span></div></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem">
       <div>
-        <div class="slabel">Study design</div>
-        <div class="stype-grid">
-          <button class="pill stype on" data-st="RCT" onclick="toggleStype(this)">Randomised Controlled Trials (RCTs)</button>
+        <div class="flabel">Study design filter</div>
+        <div class="pills">
+          <button class="pill stype on" data-st="RCT" onclick="toggleStype(this)">Randomised Controlled Trials</button>
           <button class="pill stype" data-st="Observational" onclick="toggleStype(this)">Observational studies</button>
           <button class="pill stype" data-st="Systematic review" onclick="toggleStype(this)">Systematic reviews / Meta-analyses</button>
-          <button class="pill stype" data-st="All" onclick="toggleStype(this)">All study types</button>
+          <button class="pill stype" data-st="All" onclick="toggleStype(this)">All study types (no filter)</button>
         </div>
       </div>
-
       <div>
-        <div class="slabel" style="margin-bottom:8px">Date range</div>
-        <div class="date-check">
-          <input type="checkbox" id="useDateRange" onchange="toggleDateRange()" />
-          <label for="useDateRange">Restrict search to a specific date range</label>
+        <div class="flabel">Publication date range</div>
+        <div class="check-row">
+          <input type="checkbox" id="useDateRange" onchange="toggleDateRange()"/>
+          <label for="useDateRange">Restrict to a specific date range</label>
         </div>
         <div id="dateRangeRow" class="date-row" style="display:none">
-          <div class="date-field">
-            <label for="dateFrom">From</label>
-            <input type="date" id="dateFrom" />
-          </div>
+          <div class="date-field"><label for="dateFrom">From</label><input type="date" id="dateFrom"/></div>
           <div class="date-sep">—</div>
-          <div class="date-field">
-            <label for="dateTo">To</label>
-            <input type="date" id="dateTo" />
-          </div>
+          <div class="date-field"><label for="dateTo">To</label><input type="date" id="dateTo"/></div>
         </div>
-        <div id="dateHint" style="font-size:12px;color:var(--text3);margin-top:4px">Leave unchecked to search from inception to today.</div>
+        <div id="dateHint" class="fdesc">No date restriction — searches from inception to today.</div>
       </div>
-
     </div>
   </div>
 
-  <!-- 3. Databases -->
+  <!-- Card 4: Databases -->
   <div class="card">
-    <div class="card-hdr"><div class="cnum">3</div><div class="ctitle">Select databases <span style="font-size:12px;color:var(--text2);font-weight:400">(select one or more)</span></div></div>
+    <div class="card-hdr"><div class="cnum">4</div><div class="ctitle">Databases<span class="csub"> — select one or more</span></div></div>
     <div class="card-body">
       <div class="pills">
         <button class="pill db on" data-db="PubMed" onclick="toggleDb(this)">PubMed</button>
@@ -337,24 +459,65 @@ footer a:hover{color:var(--text)}
         <button class="pill db on" data-db="Cochrane" onclick="toggleDb(this)">Cochrane</button>
         <button class="pill db on" data-db="Scopus" onclick="toggleDb(this)">Scopus</button>
         <button class="pill db on" data-db="Web of Science" onclick="toggleDb(this)">Web of Science</button>
+        <button class="pill db" data-db="Google Scholar" onclick="toggleDb(this)">Google Scholar</button>
       </div>
+      <div class="fdesc" style="margin-top:8px">For maximum coverage, include at least PubMed + Embase + Cochrane. Google Scholar uses free-text only.</div>
     </div>
   </div>
 
-  <!-- 4. Term type -->
+  <!-- Card 5: Search term type -->
   <div class="card">
-    <div class="card-hdr"><div class="cnum">4</div><div class="ctitle">Search term type</div></div>
+    <div class="card-hdr"><div class="cnum">5</div><div class="ctitle">Search term type</div></div>
     <div class="card-body">
       <div class="pills">
-        <button class="pill on" data-type="both" onclick="setType('both',this)">MeSH + Title/Abstract</button>
+        <button class="pill on" data-type="both" onclick="setType('both',this)">MeSH + Title/Abstract <span style="font-size:11px;opacity:.7">(recommended)</span></button>
         <button class="pill" data-type="mesh" onclick="setType('mesh',this)">MeSH terms only</button>
         <button class="pill" data-type="tiab" onclick="setType('tiab',this)">Title/Abstract only</button>
+        <button class="pill" data-type="author" onclick="setType('author',this)">Author &amp; journal</button>
+        <button class="pill" data-type="none" onclick="setType('none',this)">No term generation</button>
       </div>
+      <div id="stypeHint" class="fdesc" style="margin-top:8px">MeSH + Title/Abstract gives broadest coverage — MeSH captures controlled vocabulary, TIAB catches free-text variants.</div>
     </div>
   </div>
 
-  <div style="display:flex;justify-content:center;margin:1.6rem 0 1.1rem">
-    <button class="btn-p" onclick="buildPrompt()">
+  <!-- Card 6: Query mode -->
+  <div class="card">
+    <div class="card-hdr"><div class="cnum">6</div><div class="ctitle">Query display mode</div></div>
+    <div class="card-body">
+      <div class="pills">
+        <button class="pill qmode on" data-qmode="combined" onclick="setQmode('combined',this)">Combined query (per database)</button>
+        <button class="pill qmode" data-qmode="picots" onclick="setQmode('picots',this)">Per PICOTS element + combined</button>
+      </div>
+      <div id="qmodeHint" class="fdesc" style="margin-top:8px">Combined: one ready-to-paste query per database. Per PICOTS: individual element queries + combined — use for step-by-step search logs.</div>
+    </div>
+  </div>
+
+  <!-- Card 7: Search depth -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="cnum">7</div>
+      <div class="ctitle">Search depth<span class="csub"> — scope of generated search terms</span></div>
+    </div>
+    <div class="card-body">
+      <div class="pills" style="gap:8px">
+        <button class="pill depth on" data-depth="comprehensive" onclick="setDepth('comprehensive',this)" style="display:flex;flex-direction:column;align-items:flex-start;border-radius:8px;padding:10px 14px;height:auto">
+          <span style="font-weight:700;font-size:13px;margin-bottom:2px">Comprehensive search</span>
+          <span style="font-size:11.5px;opacity:.75;font-weight:400">Full synonyms · truncation (*) · all variants · MeSH explosion</span>
+          <span style="font-size:10.5px;margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.6">Recommended for systematic reviews</span>
+        </button>
+        <button class="pill depth" data-depth="quick" onclick="setDepth('quick',this)" style="display:flex;flex-direction:column;align-items:flex-start;border-radius:8px;padding:10px 14px;height:auto">
+          <span style="font-weight:700;font-size:13px;margin-bottom:2px">Quick search</span>
+          <span style="font-size:11.5px;opacity:.75;font-weight:400">Core terms only · 2–3 synonyms · fewer variants</span>
+          <span style="font-size:10.5px;margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.6">Scoping reviews · preliminary searches</span>
+        </button>
+      </div>
+      <div id="depthHint" class="fdesc" style="margin-top:10px">Comprehensive: full synonym lists, truncation (*), MeSH explosion, brand names, abbreviations, spelling variants — recommended for systematic reviews.</div>
+    </div>
+  </div>
+
+  <!-- Build button -->
+  <div style="display:flex;justify-content:center;margin:2rem 0 1.2rem">
+    <button class="btn-primary" onclick="buildPrompt()">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       Build prompt for Claude.ai
     </button>
@@ -362,107 +525,245 @@ footer a:hover{color:var(--text)}
 
   <div id="errBox"></div>
 
+  <!-- Prompt + Paste -->
   <div id="promptArea" style="display:none">
     <div class="prompt-wrap">
       <div class="prompt-hdr">
-        <div class="prompt-title"><span class="badge">Step 2</span> Copy this prompt → paste into Claude.ai</div>
+        <div class="prompt-title"><span class="step-badge">Step 2</span> Copy this prompt → paste into Claude.ai</div>
         <div style="display:flex;gap:7px;align-items:center">
-          <button class="btn-s" id="cpBtn" onclick="copyPrompt()">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy prompt
+          <button class="btn-sec" id="cpBtn" onclick="copyPrompt()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy prompt
           </button>
           <a class="btn-claude" href="https://claude.ai" target="_blank" rel="noopener">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            Open Claude.ai ↗
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>Open Claude.ai ↗
           </a>
         </div>
       </div>
       <div class="prompt-body" id="promptTxt"></div>
       <div class="prompt-foot">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span class="hint">Run the prompt in Claude.ai → copy the <strong style="color:var(--text2)">entire JSON response</strong> → paste below.</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span class="hint">Run the prompt in Claude.ai → copy the <strong style="color:var(--text)">entire JSON response</strong> → paste into the box below.</span>
       </div>
     </div>
 
     <div class="paste-wrap">
       <div class="paste-hdr">
-        <span class="badge g">Step 3</span>
-        <span style="font-size:13px;font-weight:500">Paste Claude's JSON response here</span>
+        <span class="step-badge g">Step 3</span>
+        <span style="font-size:13px;font-weight:600;color:var(--text)">Paste Claude's JSON response here</span>
       </div>
       <div class="paste-body">
-        <textarea id="jsonIn" rows="6" placeholder='Paste Claude&apos;s full JSON response here, e.g. { "picot": {...}, "terms": {...}, "queries": {...} }'></textarea>
+        <textarea id="jsonIn" rows="5" placeholder='Paste the full JSON from Claude here — starts with { "picots": { ... } }'></textarea>
         <div class="parse-row">
-          <button class="btn-s" onclick="document.getElementById('jsonIn').value=''">Clear</button>
-          <button class="btn-p sm" onclick="parseRender()">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            Render results
+          <button class="btn-sec" onclick="document.getElementById('jsonIn').value=''">Clear</button>
+          <button class="btn-primary sm" onclick="parseRender()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Render results
           </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- RESULTS -->
   <div id="res" style="display:none"></div>
-</div>
+
+</div><!-- /main -->
 
 <footer>
-  <p>SRKey uses <a href="https://claude.ai" target="_blank">Claude.ai</a> to generate PICOT-based search strategies — free, no account required for the app. Always validate generated strategies with a medical librarian before use.</p>
+  <p>SRKey uses <a href="https://claude.ai" target="_blank">Claude.ai</a> · <a href="https://docx.js.org" target="_blank">docx.js</a> · MIT License · Always validate generated strategies with a qualified medical librarian before use.</p>
 </footer>
 
-<script>
-/* ── STATE ── */
-let stype='both';
-let dbs=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
-let studyTypes=['RCT'];
-let results=null, study='', prompt='';
+<!-- ═══════════════════════════════════════════ README MODAL ═══ -->
+<div id="readmeModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeReadme()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <span class="modal-hdr-title">SRKey — About &amp; Guide</span>
+        <span class="modal-ver">v2.0.0</span>
+      </div>
+      <button class="modal-close" onclick="closeReadme()">✕</button>
+    </div>
+    <div class="modal-body readme">
 
-/* ── INIT: set today as default dateTo ── */
+      <p>SRKey helps you generate <strong>comprehensive, professional-grade search strategies</strong> for systematic reviews using the PICOTS framework — free via Claude.ai, no API key required.</p>
+
+      <h2>⚠️ Important — Read Before Use</h2>
+      <div style="background:var(--warning-bg);border:2px solid var(--warning-border);border-radius:var(--r);padding:12px 14px;margin-bottom:.5rem">
+        <p style="color:var(--amber);font-weight:600;font-size:13px;margin-bottom:4px">All generated search strategies must be reviewed and validated by a qualified medical librarian before use in a systematic review.</p>
+        <p style="color:var(--amber);font-size:12.5px;margin-bottom:0">AI-generated queries are a starting point — they may miss database-specific syntax nuances, require additional subject-specific terms, or need adjustment based on your review protocol. Do not use directly without expert validation.</p>
+      </div>
+
+      <h2>How to use — step by step</h2>
+      <div class="guide-steps">
+        <div class="guide-step"><div class="gnum">1</div><div class="gtxt"><strong>Enter your study objective</strong>Type your research question in Card 1. Be specific — mention the condition, treatment, and comparison if known.</div></div>
+        <div class="guide-step"><div class="gnum">2</div><div class="gtxt"><strong>Optionally specify PICOTS (Card 2)</strong>Fill in specific terms for P, I, C, O, T, S to guide the AI. Use the NOT field for exclusions (e.g. "animal studies, in vitro").</div></div>
+        <div class="guide-step"><div class="gnum">3</div><div class="gtxt"><strong>Select study type &amp; dates (Card 3)</strong>Choose RCT, Observational, or All. Enable date range if needed.</div></div>
+        <div class="guide-step"><div class="gnum">4</div><div class="gtxt"><strong>Choose databases (Card 4)</strong>For comprehensive SR: use PubMed + Embase + Cochrane as minimum. Add Scopus/WoS for broader coverage.</div></div>
+        <div class="guide-step"><div class="gnum">5</div><div class="gtxt"><strong>Set term type, query mode &amp; depth (Cards 5–7)</strong>MeSH + TIAB = recommended. Choose "Per PICOTS element" for step-by-step logs. Choose <strong>Comprehensive</strong> for systematic reviews, <strong>Quick</strong> for scoping.</div></div>
+        <div class="guide-step"><div class="gnum">6</div><div class="gtxt"><strong>Build prompt → paste into Claude.ai</strong>Click "Build prompt", copy it, open claude.ai, paste and press Enter. Wait for the JSON response.</div></div>
+        <div class="guide-step"><div class="gnum">7</div><div class="gtxt"><strong>Paste JSON back → render</strong>Copy Claude's entire response (from { to }), paste into the box, click "Render results".</div></div>
+        <div class="guide-step"><div class="gnum">8</div><div class="gtxt"><strong>Export to Word</strong>Click "Export strategy" for the full PICOTS + query document. Click "Search log template (.docx)" to download a blank log template.</div></div>
+      </div>
+
+      <h2>PICOTS framework explained</h2>
+      <table class="readme-tbl">
+        <thead><tr><th>Letter</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>P</code></td><td><strong>Population</strong> — who you are studying</td><td>Adults with type 2 diabetes</td></tr>
+          <tr><td><code>I</code></td><td><strong>Intervention</strong> — what treatment/exposure</td><td>SGLT-2 inhibitors (dapagliflozin, empagliflozin)</td></tr>
+          <tr><td><code>C</code></td><td><strong>Comparator</strong> — what you compare against</td><td>Placebo or standard care (metformin)</td></tr>
+          <tr><td><code>O</code></td><td><strong>Outcome</strong> — what you measure</td><td>HbA1c reduction, cardiovascular events</td></tr>
+          <tr><td><code>T</code></td><td><strong>Timeframe</strong> — follow-up duration or date range</td><td>≥6 months follow-up, published 2000–present</td></tr>
+          <tr><td><code>S</code></td><td><strong>Setting</strong> — study context or healthcare setting</td><td>Primary care, hospital, community, LMIC</td></tr>
+          <tr><td><code>NOT</code></td><td><strong>Exclusion</strong> — what to filter out</td><td>Animal studies, in vitro, case reports</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Database coverage guide</h2>
+      <table class="readme-tbl">
+        <thead><tr><th>Database</th><th>Strength</th><th>Syntax</th><th>Access</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PubMed</strong></td><td>Biomedical, free, very comprehensive</td><td><code>[MeSH Terms]</code>, <code>[tiab]</code></td><td><a href="https://pubmed.ncbi.nlm.nih.gov/advanced/" target="_blank">Free ↗</a></td></tr>
+          <tr><td><strong>Embase</strong></td><td>Pharmacology, European journals, Emtree</td><td><code>/exp</code>, <code>:ti,ab</code></td><td><a href="https://www.embase.com/search/quick" target="_blank">Subscription ↗</a></td></tr>
+          <tr><td><strong>Cochrane</strong></td><td>Clinical trials, SR/meta-analysis</td><td>MeSH + free-text</td><td><a href="https://www.cochranelibrary.com/advanced-search" target="_blank">Free/Sub ↗</a></td></tr>
+          <tr><td><strong>Scopus</strong></td><td>Broad multidisciplinary</td><td><code>TITLE-ABS-KEY()</code></td><td><a href="https://www.scopus.com/search/form.uri?display=advanced" target="_blank">Subscription ↗</a></td></tr>
+          <tr><td><strong>Web of Science</strong></td><td>Citation tracking, high-impact journals</td><td><code>TS=()</code></td><td><a href="https://www.webofscience.com/wos/woscc/advanced-search" target="_blank">Subscription ↗</a></td></tr>
+          <tr><td><strong>Google Scholar</strong></td><td>Grey literature, theses — use for supplementary search</td><td>Free-text only</td><td><a href="https://scholar.google.com" target="_blank">Free ↗</a></td></tr>
+        </tbody>
+      </table>
+
+      <h2>Search depth</h2>
+      <ul>
+        <li><strong>Comprehensive (default)</strong> — full synonym lists, truncation (*), MeSH explosion, all brand names, abbreviations, spelling variants. Required for systematic reviews.</li>
+        <li><strong>Quick</strong> — core terms only, top 2–3 synonyms per concept, primary MeSH only. Good for scoping reviews or preliminary literature checks.</li>
+      </ul>
+
+      <h2>Search term types</h2>
+      <ul>
+        <li><strong>MeSH + Title/Abstract (recommended)</strong> — NLM MeSH controlled headings + free-text. Broadest coverage — captures both indexed terms and text variants.</li>
+        <li><strong>MeSH only</strong> — controlled vocabulary only. May miss newer/unindexed articles.</li>
+        <li><strong>Title/Abstract only</strong> — free-text keywords and synonyms. Useful when MeSH headings don't exist yet.</li>
+        <li><strong>Author &amp; journal</strong> — generates author names and journal title searches. Use to find all work from a specific group or journal.</li>
+        <li><strong>No term generation</strong> — skips term generation; only combined query structure is provided. Use if you have your own terms.</li>
+      </ul>
+
+      <h2>Key references &amp; further reading</h2>
+
+      <h3>Reporting standards (PRISMA)</h3>
+      <ul>
+        <li>Page MJ, et al. <em>The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.</em> BMJ. 2021;372:n71. <a href="https://doi.org/10.1136/bmj.n71" target="_blank">doi:10.1136/bmj.n71 ↗</a></li>
+        <li>Moher D, et al. <em>Preferred reporting items for systematic reviews and meta-analyses: the PRISMA statement.</em> PLoS Med. 2009;6(7):e1000097. <a href="https://doi.org/10.1371/journal.pmed.1000097" target="_blank">doi:10.1371/journal.pmed.1000097 ↗</a></li>
+      </ul>
+
+      <h3>Cochrane methodology</h3>
+      <ul>
+        <li>Higgins JPT, et al. (eds). <em>Cochrane Handbook for Systematic Reviews of Interventions.</em> Version 6.4. 2023. <a href="https://training.cochrane.org/handbook" target="_blank">training.cochrane.org/handbook ↗</a></li>
+        <li>Lefebvre C, et al. <em>Chapter 4: Searching for and selecting studies.</em> In: Cochrane Handbook v6.4. 2023. <a href="https://training.cochrane.org/handbook/current/chapter-04" target="_blank">Chapter 4 ↗</a></li>
+      </ul>
+
+      <h3>Search strategy peer review</h3>
+      <ul>
+        <li>McGowan J, et al. <em>PRESS Peer Review of Electronic Search Strategies: 2015 guideline statement.</em> J Clin Epidemiol. 2016;75:40-46. <a href="https://doi.org/10.1016/j.jclinepi.2016.01.021" target="_blank">doi ↗</a></li>
+      </ul>
+
+      <h3>Useful tools</h3>
+      <ul>
+        <li><a href="https://meshb.nlm.nih.gov/" target="_blank">NLM MeSH Browser</a> — verify MeSH terms before use</li>
+        <li><a href="https://www.prisma-statement.org/" target="_blank">PRISMA website</a> — checklists and flow diagrams</li>
+        <li><a href="https://www.cochranelibrary.com/about/searching-cochrane-library" target="_blank">Cochrane search guide</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/help/" target="_blank">PubMed search help</a></li>
+      </ul>
+
+      <h2>Changelog</h2>
+      <div class="cl-item">
+        <div class="cl-ver"><span class="cl-tag">v2.0.0</span><span class="cl-date">April 2026</span><span class="cl-new">Latest</span></div>
+        <ul>
+          <li>Complete UI/UX redesign — professional light theme, cleaner layout</li>
+          <li>Added <strong>optional PICOTS specification</strong> (Cards 1–2) with NOT field for exclusions</li>
+          <li>Added <strong>Author &amp; Journal</strong> and <strong>No term generation</strong> search term types</li>
+          <li>Added <strong>Google Scholar</strong> as database option</li>
+          <li>Search log: numbering resets per database (not continuous)</li>
+          <li>Removed on-screen log table — export directly to Word</li>
+          <li>Improved A4-format Word exports with professional layout</li>
+          <li>Added <strong>Search logic explanation</strong> section in results</li>
+          <li>Prominent validation warning banner throughout</li>
+          <li>Updated About &amp; Guide with step-by-step instructions</li>
+        </ul>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver"><span class="cl-tag">v1.4.0</span><span class="cl-date">April 2026</span></div>
+        <ul><li>Query mode (Combined / Per PICOTS), search log export, database direct links</li></ul>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver"><span class="cl-tag">v1.3.0</span><span class="cl-date">April 2026</span></div>
+        <ul><li>PICOTS framework, study type filters, date range picker</li></ul>
+      </div>
+      <div class="cl-item">
+        <div class="cl-ver"><span class="cl-tag">v1.0–1.2</span><span class="cl-date">Jan–Mar 2026</span></div>
+        <ul><li>Initial release, multi-database, Word export</li></ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════ STATE ══════════════════════════════════ */
+let stype='both', dbs=['PubMed','Embase','Cochrane','Scopus','Web of Science'],
+    studyTypes=['RCT'], qmode='combined', searchDepth='comprehensive',
+    results=null, study='', prompt='';
+
+/* ══════════════════════════════════ INIT ══════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
-  const today=new Date().toISOString().slice(0,10);
-  document.getElementById('dateTo').value=today;
-  document.getElementById('dateFrom').value='1900-01-01';
+  const t=new Date().toISOString().slice(0,10);
+  document.getElementById('dateTo').value=t;
+  document.getElementById('dateFrom').value='1946-01-01';
 });
 
-/* ── TOGGLES ── */
+/* ══════════════════════════════════ TOGGLES ══════════════════════════════════ */
 function setType(t,el){
   stype=t;
   document.querySelectorAll('.pill[data-type]').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
+  const hints={
+    both:'MeSH + Title/Abstract gives broadest coverage — MeSH captures controlled vocabulary, TIAB catches free-text variants.',
+    mesh:'MeSH only — controlled vocabulary. May miss newer or unindexed articles.',
+    tiab:'Title/Abstract only — free-text keywords and synonyms. Good when MeSH coverage is limited.',
+    author:'Author & Journal — generates author name searches and journal title searches.',
+    none:'No term generation — only provides query structure. Use if you already have your own terms.'
+  };
+  document.getElementById('stypeHint').textContent=hints[t]||'';
 }
 
 function toggleDb(el){
   const db=el.dataset.db;
-  if(el.classList.contains('on')){
-    if(dbs.length===1)return;
-    el.classList.remove('on');
-    dbs=dbs.filter(d=>d!==db);
-  } else {
-    el.classList.add('on');
-    if(!dbs.includes(db))dbs.push(db);
-  }
+  if(el.classList.contains('on')){if(dbs.length===1)return;el.classList.remove('on');dbs=dbs.filter(d=>d!==db)}
+  else{el.classList.add('on');if(!dbs.includes(db))dbs.push(db)}
 }
 
 function toggleStype(el){
   const st=el.dataset.st;
-  if(st==='All'){
-    // "All" is exclusive
-    document.querySelectorAll('.pill.stype').forEach(b=>b.classList.remove('on'));
-    el.classList.add('on');
-    studyTypes=['All'];
-    return;
-  }
-  // deselect "All" if present
+  if(st==='All'){document.querySelectorAll('.pill.stype').forEach(b=>b.classList.remove('on'));el.classList.add('on');studyTypes=['All'];return}
   document.querySelectorAll('.pill.stype[data-st="All"]').forEach(b=>b.classList.remove('on'));
   studyTypes=studyTypes.filter(s=>s!=='All');
+  if(el.classList.contains('on')){if(studyTypes.length===1)return;el.classList.remove('on');studyTypes=studyTypes.filter(s=>s!==st)}
+  else{el.classList.add('on');if(!studyTypes.includes(st))studyTypes.push(st)}
+}
 
-  if(el.classList.contains('on')){
-    if(studyTypes.length===1)return;
-    el.classList.remove('on');
-    studyTypes=studyTypes.filter(s=>s!==st);
-  } else {
-    el.classList.add('on');
-    if(!studyTypes.includes(st))studyTypes.push(st);
-  }
+function setQmode(m,el){
+  qmode=m;
+  document.querySelectorAll('.pill.qmode').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  document.getElementById('qmodeHint').textContent=
+    m==='combined'?'Combined: one ready-to-paste query per database.':
+    'Per PICOTS: individual element queries + combined — use for step-by-step search logs.';
+}
+
+function setDepth(d,el){
+  searchDepth=d;
+  document.querySelectorAll('.pill.depth').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  document.getElementById('depthHint').textContent=
+    d==='comprehensive'
+      ? 'Comprehensive: full synonym lists, truncation (*), MeSH explosion, brand names, abbreviations, spelling variants — recommended for systematic reviews.'
+      : 'Quick: core terms only, fewer synonyms — suitable for scoping, preliminary searches, or when time is limited. May miss some relevant studies.';
 }
 
 function toggleDateRange(){
@@ -471,91 +772,161 @@ function toggleDateRange(){
   document.getElementById('dateHint').style.display=use?'none':'block';
 }
 
-/* ── BUILD PROMPT ── */
+/* ══════════════════════════════════ BUILD PROMPT ══════════════════════════════════ */
 function buildPrompt(){
   const v=document.getElementById('studyInput').value.trim();
-  clearErr();
-  if(!v){showErr('Please enter a study title or research objective.');return}
+  clearErr(); if(!v){showErr('Please enter a study title or research objective.');return}
   study=v;
 
-  const tl={both:'MeSH terms AND Title/Abstract (TIAB) keywords',mesh:'MeSH terms only',tiab:'Title/Abstract (TIAB) keywords only'}[stype];
+  // Optional PICOT
+  const oP=document.getElementById('picotP').value.trim();
+  const oI=document.getElementById('picotI').value.trim();
+  const oC=document.getElementById('picotC').value.trim();
+  const oO=document.getElementById('picotO').value.trim();
+  const oT=document.getElementById('picotT').value.trim();
+  const oS=document.getElementById('picotS').value.trim();
+  const oNot=document.getElementById('picotNot').value.trim();
+  const hasManual=oP||oI||oC||oO||oT||oS;
+
+  const manualBlock=hasManual?`
+Researcher-specified PICOTS (use these as primary guidance, expand terms around them):
+- P (Population): ${oP||'Infer from study title'}
+- I (Intervention): ${oI||'Infer from study title'}
+- C (Comparator): ${oC||'Infer from study title'}
+- O (Outcome): ${oO||'Infer from study title'}
+- T (Timeframe): ${oT||'Infer from study title'}
+- S (Setting): ${oS||'Infer from study title'}`:
+  '';
+
+  const notBlock=oNot?`\nNOT exclusion terms: ${oNot}
+Apply NOT operator to exclude: ${oNot} from all database queries.`:'';
+
+  const tl={
+    both:'MeSH terms AND Title/Abstract (TIAB) keywords — include MeSH headings, entry terms, synonyms, brand names, abbreviations',
+    mesh:'MeSH terms only — standard NLM MeSH headings with explosion where appropriate',
+    tiab:'Title/Abstract keywords only — synonyms, abbreviations, brand names, spelling variants',
+    author:'Author names and journal titles — for targeted author/journal searching',
+    none:'No search term generation — provide only query structure and combined query'
+  }[stype];
+
   const dl=dbs.join(', ');
 
-  /* Date range */
   const useDate=document.getElementById('useDateRange').checked;
-  let dateStr='';
-  let dateInstructions='';
+  let dateInstr='- No date restriction. Do NOT add date filters.';
   if(useDate){
     const from=document.getElementById('dateFrom').value;
     const to=document.getElementById('dateTo').value;
-    const fmtDate=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
-    dateStr=`${fmtDate(from)} to ${fmtDate(to)}`;
-    dateInstructions=`- Apply date restriction: ${dateStr}. Add appropriate date filter syntax for each database (e.g. PubMed: AND ("${from}"[Date - Publication] : "${to}"[Date - Publication]), Embase: AND [${from.slice(0,4)}-${to.slice(0,4)}]/py, Scopus: AND PUBYEAR > ${from.slice(0,4)-1} AND PUBYEAR < ${to.slice(0,4)-1}).`;
-  } else {
-    dateInstructions='- No date restriction (search from inception to today). Do NOT add any date filter.';
+    const fmt=d=>{const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+    dateInstr=`- Date restriction: ${fmt(from)} to ${fmt(to)}. Add date filter syntax for each database.`;
   }
 
-  /* Study type */
   const stypeLabel=studyTypes.includes('All')?'all study types':studyTypes.join(' and ');
-  let stypeInstructions='';
+  let stypeInstr='- No study type restriction.';
   if(!studyTypes.includes('All')){
-    const filters=[];
-    if(studyTypes.includes('RCT'))filters.push('Include appropriate RCT filter (e.g. MeSH: "Randomized Controlled Trial"[pt] for PubMed; randomized controlled trial/exp for Embase)');
-    if(studyTypes.includes('Observational'))filters.push('Include appropriate observational study filter (cohort, case-control, cross-sectional studies)');
-    if(studyTypes.includes('Systematic review'))filters.push('Include systematic review / meta-analysis filter');
-    stypeInstructions=`- Study type filter: ${stypeLabel}. ${filters.join('. ')}.`;
-  } else {
-    stypeInstructions='- No study type restriction.';
+    const f=[];
+    if(studyTypes.includes('RCT'))f.push('RCT filter (e.g. "Randomized Controlled Trial"[pt] for PubMed; randomized controlled trial/exp for Embase)');
+    if(studyTypes.includes('Observational'))f.push('Observational studies filter (cohort, case-control, cross-sectional)');
+    if(studyTypes.includes('Systematic review'))f.push('Systematic review/meta-analysis filter');
+    stypeInstr=`- Restrict to: ${stypeLabel}. Apply: ${f.join('; ')}.`;
   }
 
-  prompt=`You are an expert medical librarian specializing in systematic review search strategies.
+  const isPerPicots=qmode==='picots';
+  const querySchema=isPerPicots?
+`  "queries": {
+    "PubMed": {
+      "P": "PubMed query for P terms only",
+      "I": "PubMed query for I terms only",
+      "C": "PubMed query for C terms only (or 'Not applicable')",
+      "O": "PubMed query for O terms only",
+      "T": "PubMed query for T (timeframe) terms only",
+      "S": "PubMed query for S (setting) terms only",
+      "combined": "full combined PubMed query (P AND I AND C AND O AND T)"
+    },
+    "Embase": {"P":"...","I":"...","C":"...","O":"...","T":"...","S":"...","combined":"..."},
+    "Cochrane": {"P":"...","I":"...","C":"...","O":"...","T":"...","S":"...","combined":"..."},
+    "Scopus": {"P":"...","I":"...","C":"...","O":"...","T":"...","S":"...","combined":"..."},
+    "Web of Science": {"P":"...","I":"...","C":"...","O":"...","T":"...","S":"...","combined":"..."},
+    "Google Scholar": {"combined":"..."}
+  }`:
+`  "queries": {
+    "PubMed": "complete PubMed query",
+    "Embase": "complete Embase query with /exp and :ti,ab",
+    "Cochrane": "complete Cochrane CENTRAL query",
+    "Scopus": "complete Scopus TITLE-ABS-KEY() query",
+    "Web of Science": "complete WoS TS=() query",
+    "Google Scholar": "simplified free-text query for Google Scholar"
+  }`;
+
+  const queryRules=isPerPicots?
+`- Provide both individual PICOTS element queries AND a combined query per database
+- Element queries use same syntax but include only that element's terms
+- combined = full AND-combination of all elements`:
+`- Each query must be complete and ready to paste directly into the database`;
+
+  const depthInstr = searchDepth==='comprehensive'
+    ? `SEARCH DEPTH: Comprehensive (systematic review standard).
+- Include ALL synonyms, spelling variants, British/American English variants, abbreviations
+- Include all brand names, trade names, and INN names for drugs
+- Apply MeSH explosion (do not use [MeSH:noexp])
+- Use truncation (*) for word stems where appropriate (e.g. smok* covers smoking, smoker, smokers)
+- Include both singular and plural forms where truncation does not cover them
+- Include older/historical terminology still found in legacy literature`
+    : `SEARCH DEPTH: Quick (scoping / preliminary search).
+- Include only the most important 2–3 synonyms per concept
+- Use the primary MeSH heading only (no explosion needed)
+- Include the most common brand name and INN for drugs only
+- Keep queries concise — prioritise precision over recall
+- Omit rare spelling variants and obscure abbreviations`;
+
+  prompt=`You are an expert medical librarian with 20+ years of experience in systematic review search strategy development.
 
 Study: "${v}"
+${manualBlock}
+${notBlock}
 
-Generate a comprehensive PICOT-based search strategy for databases: ${dl}.
+Generate a PICOTS-based search strategy for databases: ${dl}.
 
-IMPORTANT: Respond with a single valid JSON object only. No markdown, no explanation, no text before or after — raw JSON only.
+${depthInstr}
+
+Respond with a SINGLE valid JSON object only. No markdown, no explanation. Raw JSON.
 
 {
-  "picot": {
-    "P": "brief population description",
-    "I": "brief intervention description",
-    "C": "brief comparator description (write 'Not applicable' if none)",
-    "O": "brief outcome description",
-    "T": "study type and time frame"
+  "picots": {
+    "P": "concise population description",
+    "I": "concise intervention description",
+    "C": "concise comparator description (or 'Not applicable')",
+    "O": "concise outcome description",
+    "T": "timeframe / follow-up duration",
+    "S": "setting / study context"
   },
   "terms": {
-    "P": { "mesh": ["MeSH term 1", "MeSH term 2"], "tiab": ["keyword", "synonym", "abbreviation"] },
+    "P": { "mesh": ["MeSH term 1","MeSH term 2"], "tiab": ["keyword","synonym","abbreviation","spelling variant"] },
     "I": { "mesh": ["..."], "tiab": ["..."] },
     "C": { "mesh": ["..."], "tiab": ["..."] },
     "O": { "mesh": ["..."], "tiab": ["..."] },
-    "T": { "mesh": ["..."], "tiab": ["..."] }
+    "T": { "mesh": ["..."], "tiab": ["..."] },
+    "S": { "mesh": ["..."], "tiab": ["..."] }
   },
-  "queries": {
-    "PubMed": "complete PubMed query with proper syntax",
-    "Embase": "complete Embase query with /exp and :ti,ab",
-    "Cochrane": "complete Cochrane CENTRAL query",
-    "Scopus": "complete Scopus query using TITLE-ABS-KEY()",
-    "Web of Science": "complete WoS query using TS=()"
-  }
+${querySchema}
 }
 
 Rules:
 - Generate: ${tl}
 - Only include queries for: ${dl}
-- Use standard NLM MeSH headings; include synonyms, brand names, abbreviations in tiab arrays
-- ${stypeInstructions}
-- ${dateInstructions}
-- Queries must be professional-grade, matching Cochrane systematic review standards
-- Each query must be complete and ready to paste directly into the respective database
-- Return ONLY the raw JSON object`;
+- Use standard NLM MeSH headings; for TIAB include ALL synonyms, abbreviations, brand names, INN names
+- ${stypeInstr}
+- ${dateInstr}
+- ${queryRules}
+- Queries must match quality of published Cochrane systematic reviews
+- Prioritise SENSITIVITY over specificity — err on the side of more results
+- Return ONLY raw JSON`;
 
   document.getElementById('promptTxt').textContent=prompt;
   document.getElementById('promptArea').style.display='block';
   document.getElementById('promptArea').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-/* ── COPY PROMPT ── */
+/* ══════════════════════════════════ COPY PROMPT ══════════════════════════════════ */
 function copyPrompt(){
   navigator.clipboard.writeText(prompt).then(()=>{
     const b=document.getElementById('cpBtn'),o=b.innerHTML;
@@ -564,101 +935,311 @@ function copyPrompt(){
   });
 }
 
-/* ── PARSE & RENDER ── */
+/* ══════════════════════════════════ PARSE & RENDER ══════════════════════════════════ */
 function parseRender(){
   const raw=document.getElementById('jsonIn').value.trim();
-  clearErr();
-  if(!raw){showErr("Please paste Claude's JSON response first.");return}
+  clearErr(); if(!raw){showErr("Please paste Claude's JSON response first.");return}
   try{
     const c=raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/,'').trim();
     results=JSON.parse(c);
     renderResults(results);
-  }catch(e){
-    showErr('Could not parse JSON. Make sure you copied the complete response from Claude. ('+e.message+')');
-  }
+  }catch(e){showErr('Could not parse JSON. Make sure you copied the complete response from Claude. ('+e.message+')');}
 }
 
-/* ── RENDER ── */
+/* ══════════════════════════════════ RENDER ══════════════════════════════════ */
 function renderResults(d){
-  const picot=d.picot||d.pico||{};  // support both field names
+  const picots=d.picots||d.picot||d.pico||{};
   const terms=d.terms||{};
   const queries=d.queries||{};
 
-  const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Time / Study type'};
-  const pb={P:'pb-p',I:'pb-i',C:'pb-c',O:'pb-o',T:'pb-t'};
-  const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
-  const dc={'PubMed':'db-pm','Embase':'db-em','Cochrane':'db-co','Scopus':'db-sc','Web of Science':'db-ws'};
-  const sm=stype!=='tiab', st=stype!=='mesh';
+  const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Timeframe',S:'Setting'};
+  const pb={P:'pb-p',I:'pb-i',C:'pb-c',O:'pb-o',T:'pb-t',S:'pb-s'};
+  const DBO=['PubMed','Embase','Cochrane','Scopus','Web of Science','Google Scholar'];
+  const dc={'PubMed':'db-pm','Embase':'db-em','Cochrane':'db-co','Scopus':'db-sc','Web of Science':'db-ws','Google Scholar':'db-gs'};
+  const dbInfo={
+    'PubMed':{url:'https://pubmed.ncbi.nlm.nih.gov/advanced/',hint:'PubMed Advanced Search'},
+    'Embase':{url:'https://www.embase.com/search/quick',hint:'Embase Quick Search'},
+    'Cochrane':{url:'https://www.cochranelibrary.com/advanced-search',hint:'Cochrane Library Advanced Search'},
+    'Scopus':{url:'https://www.scopus.com/search/form.uri?display=advanced',hint:'Scopus Advanced Search'},
+    'Web of Science':{url:'https://www.webofscience.com/wos/woscc/advanced-search',hint:'Web of Science Advanced Search'},
+    'Google Scholar':{url:'https://scholar.google.com',hint:'Google Scholar — use for supplementary searching'}
+  };
 
-  const keys=Object.keys(picot).filter(k=>['P','I','C','O','T'].includes(k));
+  const sm=stype!=='tiab'&&stype!=='author'&&stype!=='none';
+  const st2=stype!=='mesh'&&stype!=='author'&&stype!=='none';
+  const keys=Object.keys(picots).filter(k=>['P','I','C','O','T','S'].includes(k));
 
+  const isPerPicots=qmode==='picots'&&dbs.some(db=>queries[db]&&typeof queries[db]==='object');
+
+  /* PICOTS TABLE */
   const rows=keys.map(k=>{
     const t=terms[k]||{mesh:[],tiab:[]};
     const mh=(t.mesh||[]).map(m=>`<span class="mc">${esc(m)}</span>`).join('');
     const th=(t.tiab||[]).map(m=>`<span class="tc">${esc(m)}</span>`).join('');
     return `<tr>
       <td><span class="pb ${pb[k]||'pb-p'}">${k}</span>${pl[k]||k}</td>
-      <td style="color:var(--text2);font-size:12px">${esc(picot[k]||'')}</td>
+      <td style="color:var(--text2);font-size:12px">${esc(picots[k]||'')}</td>
       ${sm?`<td>${mh||'<span style="color:var(--text3)">—</span>'}</td>`:''}
-      ${st?`<td>${th||'<span style="color:var(--text3)">—</span>'}</td>`:''}
+      ${st2?`<td>${th||'<span style="color:var(--text3)">—</span>'}</td>`:''}
     </tr>`;
   }).join('');
 
-  // render ALL selected dbs that have a query
-  const qcards=dbo.filter(db=>dbs.includes(db)).map(db=>{
-    const q=queries[db]||'No query generated for this database.';
-    return `<div class="qcard">
-      <div class="qcard-hdr">
-        <span class="dbl ${dc[db]}">${db}</span>
-        <button class="btn-s" id="cp-${db.replace(/\s/g,'-')}" onclick="cpQ('${db}')">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy
-        </button>
-      </div>
-      <div class="qbody">${esc(q)}</div>
-    </div>`;
+  /* QUERY CARDS */
+  const qcards=DBO.filter(db=>dbs.includes(db)).map(db=>{
+    const q=queries[db];
+    const info=dbInfo[db];
+    const isPicotObj=q&&typeof q==='object';
+
+    if(isPerPicots&&isPicotObj){
+      const elRows=['P','I','C','O','T','S'].filter(k=>q[k]&&q[k]!=='Not applicable').map(k=>`
+        <div style="border-bottom:1px solid var(--border);padding:9px 13px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <span class="pb ${pb[k]}">${k}</span>
+            <span style="font-size:11.5px;color:var(--text2)">${pl[k]}</span>
+          </div>
+          <div class="qbody" style="padding:0;font-size:11px">${esc(q[k])}</div>
+        </div>`).join('');
+      const combined=q.combined||'';
+      return `<div class="qcard">
+        <div class="qcard-hdr">
+          <div style="display:flex;align-items:center;gap:7px">
+            <span class="dbl ${dc[db]}">${db}</span>
+            <a class="btn-db-link" href="${info.url}" target="_blank" rel="noopener" title="${info.hint}">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>Open ↗
+            </a>
+          </div>
+          <button class="btn-sec" id="cp-${db.replace(/\s/g,'-')}" onclick="cpQ('${db}')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy combined
+          </button>
+        </div>
+        ${elRows}
+        <div style="padding:10px 13px;background:var(--bg3);border-top:1px solid var(--border2)">
+          <div style="font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Combined query</div>
+          <div class="qbody" style="padding:0">${esc(combined)}</div>
+        </div>
+      </div>`;
+    } else {
+      const qStr=isPicotObj?(q.combined||''):(q||'No query generated.');
+      return `<div class="qcard">
+        <div class="qcard-hdr">
+          <div style="display:flex;align-items:center;gap:7px">
+            <span class="dbl ${dc[db]}">${db}</span>
+            <a class="btn-db-link" href="${info.url}" target="_blank" rel="noopener" title="${info.hint}">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>Open ↗
+            </a>
+          </div>
+          <button class="btn-sec" id="cp-${db.replace(/\s/g,'-')}" onclick="cpQ('${db}')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy
+          </button>
+        </div>
+        <div class="qbody">${esc(qStr)}</div>
+      </div>`;
+    }
   }).join('');
+
+  /* SEARCH LOGIC SECTION */
+  const logicHtml=buildLogicSection(picots,terms,queries,keys,pl,isPerPicots,DBO);
 
   document.getElementById('res').innerHTML=`
     <div class="divider"></div>
-    <div class="res-hdr">
-      <div class="res-title">Search strategy</div>
+
+    <!-- WARNING -->
+    <div class="warning-banner">
+      <div class="warning-icon"><svg viewBox="0 0 24 24" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+      <div class="warning-text">
+        <strong>⚠️ Validation Required Before Use</strong>
+        <p>These AI-generated search strategies are a starting point only. They MUST be reviewed and validated by a qualified medical librarian before use in a systematic review. Verify all MeSH terms at <a href="https://meshb.nlm.nih.gov/" target="_blank" style="color:var(--amber);text-decoration:underline">meshb.nlm.nih.gov</a> and adjust syntax as needed.</p>
+      </div>
+    </div>
+
+    <!-- RES HEADER -->
+    <div class="res-top">
+      <div class="res-title">Search strategy results</div>
       <div class="res-actions">
-        <button class="btn-s" id="cpAllBtn" onclick="cpAll()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          Copy all queries
+        <button class="btn-sec" id="cpAllBtn" onclick="cpAll()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy all queries
         </button>
-        <button class="btn-w" id="wBtn" onclick="expWord()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Export to Word
+        <button class="btn-word" id="wBtn" onclick="expWord()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export strategy
+        </button>
+        <button class="btn-log" id="logBtn" onclick="expWordLog()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M15 11H9m6 4H9"/></svg>
+          Search log template (.docx)
         </button>
       </div>
     </div>
 
-    <div class="tbl-wrap" style="margin-bottom:1.3rem">
+    <!-- PICOTS TABLE -->
+    <div class="tbl-wrap" style="margin-bottom:1.2rem">
       <table class="pt">
         <thead><tr>
-          <th>Element</th><th>Description</th>
+          <th style="width:140px">Element</th>
+          <th>Description</th>
           ${sm?'<th>MeSH Terms</th>':''}
-          ${st?'<th>Title/Abstract Keywords</th>':''}
+          ${st2?'<th>Title/Abstract Keywords</th>':''}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
 
+    <!-- QUERY CARDS -->
     <div class="db-sec">
-      <div class="db-sec-lbl">Database queries (${dbs.length} database${dbs.length>1?'s':''})</div>
+      <div class="db-sec-lbl">${dbs.length} database${dbs.length>1?'s':''} — ${isPerPicots?'per PICOTS element':'combined query'}</div>
       ${qcards}
-    </div>`;
+    </div>
+
+    <!-- SEARCH LOGIC -->
+    ${logicHtml}`;
 
   document.getElementById('res').style.display='block';
   document.getElementById('res').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-/* ── COPY ── */
+/* ══════════════════════════════════ SEARCH LOGIC SECTION ══════════════════════════════════ */
+function buildLogicSection(picots,terms,queries,keys,pl,isPerPicots,DBO){
+  const activeDbs=DBO.filter(db=>dbs.includes(db));
+  const oNot=document.getElementById('picotNot').value.trim();
+  const useDate=document.getElementById('useDateRange').checked;
+
+  return `
+  <div class="logic-section" style="margin-top:1.5rem">
+    <div class="logic-hdr">
+      <div class="logic-hdr-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <span style="font-size:13px;font-weight:700;color:var(--text)">Search logic &amp; rationale</span>
+      <span style="font-size:11.5px;color:var(--text3);margin-left:4px">— Understanding how this strategy was built</span>
+    </div>
+    <div class="logic-body">
+
+      <div class="logic-step">
+        <div class="logic-num">1</div>
+        <div class="logic-content">
+          <div class="logic-title">PICOTS decomposition</div>
+          <div class="logic-desc">The research question is broken into ${keys.length} components (${keys.join(', ')}). Each element is searched independently using synonyms, then combined. <strong>T (Timeframe)</strong> restricts by follow-up duration or publication period. <strong>S (Setting)</strong> restricts by study context (e.g. primary care, hospital, LMIC) when relevant to the review question.</div>
+        </div>
+      </div>
+
+      <div class="logic-step">
+        <div class="logic-num">2</div>
+        <div class="logic-content">
+          <div class="logic-title">Within-element OR logic — casting a wide net</div>
+          <div class="logic-desc">Within each PICOTS element, synonyms and variant terms are combined with <strong>OR</strong> — this is the "sensitivity step". Including all synonyms, abbreviations, and spelling variants ensures the search captures all relevant literature regardless of how authors describe the concept.</div>
+          <div class="logic-formula">
+            P: (<span class="logic-or">population term 1</span> OR <span class="logic-or">synonym</span> OR <span class="logic-or">abbreviation</span>)<br>
+            I: (<span class="logic-or">intervention</span> OR <span class="logic-or">brand name</span> OR <span class="logic-or">INN</span>)<br>
+            O: (<span class="logic-or">outcome measure 1</span> OR <span class="logic-or">outcome measure 2</span>)<br>
+            S: (<span class="logic-or">primary care</span> OR <span class="logic-or">community</span> OR <span class="logic-or">outpatient</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="logic-step">
+        <div class="logic-num">3</div>
+        <div class="logic-content">
+          <div class="logic-title">Cross-element AND logic — focusing the search</div>
+          <div class="logic-desc">The PICOTS element blocks are then combined with <strong>AND</strong> — this is the "specificity step". Only articles that mention all key concepts will appear in results. This balances sensitivity with manageability.</div>
+          <div class="logic-formula">
+            (<span class="logic-or">P terms</span>) <span class="logic-and">AND</span> (<span class="logic-or">I terms</span>) <span class="logic-and">AND</span> (<span class="logic-or">C terms</span>) <span class="logic-and">AND</span> (<span class="logic-or">O terms</span>) <span class="logic-and">AND</span> (<span class="logic-or">T terms</span>) <span class="logic-and">AND</span> (<span class="logic-or">S terms</span>)
+          </div>
+        </div>
+      </div>
+
+      ${oNot?`<div class="logic-step">
+        <div class="logic-num">4</div>
+        <div class="logic-content">
+          <div class="logic-title">NOT operator — excluding irrelevant records</div>
+          <div class="logic-desc">Terms specified in the NOT field (<em>${esc(oNot)}</em>) are appended to exclude clearly irrelevant study types or populations. Use NOT carefully — it can inadvertently exclude relevant studies if terms overlap with your topic.</div>
+          <div class="logic-formula">... <span class="logic-and">AND</span> ... <span class="logic-not">NOT</span> (<span class="logic-or">${esc(oNot).replace(/,\s*/g,'</span> OR <span class="logic-or">')}</span>)</div>
+        </div>
+      </div>`:''}
+
+      <div class="logic-step">
+        <div class="logic-num">${oNot?5:4}</div>
+        <div class="logic-content">
+          <div class="logic-title">MeSH + free-text: two-pronged approach</div>
+          <div class="logic-desc">Using <strong>MeSH (Medical Subject Headings)</strong> captures articles indexed under controlled vocabulary — even if the author used a different word. Using <strong>Title/Abstract (TIAB)</strong> free-text captures articles not yet indexed or using newer terminology. Together they provide maximum recall.</div>
+        </div>
+      </div>
+
+      <div class="logic-step">
+        <div class="logic-num">${oNot?6:5}</div>
+        <div class="logic-content">
+          <div class="logic-title">Multi-database rationale</div>
+          <div class="logic-desc">No single database indexes all journals. The ${activeDbs.length} database${activeDbs.length>1?'s':''} selected (${activeDbs.join(', ')}) cover different journal sets. Searching multiple databases and deduplicating results is a core requirement of systematic review methodology (PRISMA guidelines).</div>
+        </div>
+      </div>
+
+      ${useDate?`<div class="logic-step">
+        <div class="logic-num">${oNot?7:6}</div>
+        <div class="logic-content">
+          <div class="logic-title">Date restriction applied</div>
+          <div class="logic-desc">A publication date filter has been applied. Note: date restrictions can introduce selection bias. Document the rationale in your review protocol (e.g. "intervention not available before [year]").</div>
+        </div>
+      </div>`:''}
+
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div style="margin-top:1.2rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px">
+    <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">Key references &amp; further reading</div>
+
+    <div style="margin-bottom:10px">
+      <div style="font-size:11.5px;font-weight:700;color:#111827;margin-bottom:4px">Reporting standards</div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7">
+        Page MJ, McKenzie JE, Bossuyt PM, et al. <em>The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.</em> BMJ. 2021;372:n71.
+        <a href="https://doi.org/10.1136/bmj.n71" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">doi:10.1136/bmj.n71 ↗</a>
+      </div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7;margin-top:4px">
+        Moher D, Liberati A, Tetzlaff J, Altman DG; PRISMA Group. <em>Preferred reporting items for systematic reviews and meta-analyses: the PRISMA statement.</em> PLoS Med. 2009;6(7):e1000097.
+        <a href="https://doi.org/10.1371/journal.pmed.1000097" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">doi:10.1371/journal.pmed.1000097 ↗</a>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <div style="font-size:11.5px;font-weight:700;color:#111827;margin-bottom:4px">Cochrane methodology</div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7">
+        Higgins JPT, Thomas J, Chandler J, et al. (editors). <em>Cochrane Handbook for Systematic Reviews of Interventions.</em> Version 6.4. Cochrane. 2023.
+        <a href="https://training.cochrane.org/handbook" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">training.cochrane.org/handbook ↗</a>
+      </div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7;margin-top:4px">
+        Lefebvre C, Glanville J, Briscoe S, et al. <em>Chapter 4: Searching for and selecting studies.</em> In: Cochrane Handbook for Systematic Reviews of Interventions, Version 6.4. 2023.
+        <a href="https://training.cochrane.org/handbook/current/chapter-04" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">Chapter 4 ↗</a>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <div style="font-size:11.5px;font-weight:700;color:#111827;margin-bottom:4px">Search strategy methodology</div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7">
+        Sampson M, McGowan J, Cogo E, Grimshaw J, Moher D, Lefebvre C. <em>An evidence-based practice guideline for the peer review of electronic search strategies.</em> J Clin Epidemiol. 2009;62(9):944-952.
+        <a href="https://doi.org/10.1016/j.jclinepi.2008.10.012" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">doi ↗</a>
+      </div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7;margin-top:4px">
+        McGowan J, Sampson M, Salzwedel DM, Cogo E, Foerster V, Lefebvre C. <em>PRESS Peer Review of Electronic Search Strategies: 2015 guideline statement.</em> J Clin Epidemiol. 2016;75:40-46.
+        <a href="https://doi.org/10.1016/j.jclinepi.2016.01.021" target="_blank" rel="noopener" style="color:#1a56db;font-size:11.5px;margin-left:4px">doi ↗</a>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#111827;margin-bottom:4px">MeSH &amp; database resources</div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.7">
+        <a href="https://meshb.nlm.nih.gov/" target="_blank" rel="noopener" style="color:#1a56db">NLM MeSH Browser ↗</a>
+        <span style="color:#9ca3af;margin:0 6px">·</span>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/help/" target="_blank" rel="noopener" style="color:#1a56db">PubMed Help ↗</a>
+        <span style="color:#9ca3af;margin:0 6px">·</span>
+        <a href="https://www.cochranelibrary.com/about/searching-cochrane-library" target="_blank" rel="noopener" style="color:#1a56db">Cochrane search guide ↗</a>
+        <span style="color:#9ca3af;margin:0 6px">·</span>
+        <a href="https://www.prisma-statement.org/" target="_blank" rel="noopener" style="color:#1a56db">PRISMA website ↗</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════ COPY ══════════════════════════════════ */
 function cpQ(db){
   if(!results)return;
   const q=(results.queries||{})[db]||'';
-  navigator.clipboard.writeText(q).then(()=>{
+  const text=typeof q==='object'?(q.combined||''):q;
+  navigator.clipboard.writeText(text).then(()=>{
     const b=document.getElementById('cp-'+db.replace(/\s/g,'-')),o=b.innerHTML;
     b.innerHTML='✓ Copied';b.classList.add('ok');
     setTimeout(()=>{b.innerHTML=o;b.classList.remove('ok')},2000);
@@ -667,10 +1248,12 @@ function cpQ(db){
 
 function cpAll(){
   if(!results)return;
-  const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
-  const text=dbo.filter(db=>dbs.includes(db))
-    .map(db=>`=== ${db} ===\n${(results.queries||{})[db]||''}`)
-    .join('\n\n');
+  const DBO=['PubMed','Embase','Cochrane','Scopus','Web of Science','Google Scholar'];
+  const text=DBO.filter(db=>dbs.includes(db)).map(db=>{
+    const q=(results.queries||{})[db]||'';
+    const qStr=typeof q==='object'?(q.combined||''):q;
+    return `=== ${db} ===\n${qStr}`;
+  }).join('\n\n');
   navigator.clipboard.writeText(text).then(()=>{
     const b=document.getElementById('cpAllBtn'),o=b.innerHTML;
     b.innerHTML='✓ Copied all';b.classList.add('ok');
@@ -678,98 +1261,131 @@ function cpAll(){
   });
 }
 
-/* ── EXPORT WORD ── */
+/* ══════════════════════════════════ WORD HELPERS ══════════════════════════════════ */
+function getDocxHelpers(){
+  const{Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,
+        BorderStyle,WidthType,ShadingType,HeadingLevel,VerticalAlign,AlignmentType,
+        PageNumber,PageOrientation}=window.docx;
+
+  // A4 portrait: 11906 x 16838 DXA, margins 1134 (2cm) all
+  const A4_W=11906, A4_H=16838, MARGIN=1134;
+  const CONTENT_W=A4_W-MARGIN*2; // 9638
+
+  const mkB=c=>({style:BorderStyle.SINGLE,size:4,color:c});
+  const bdr={top:mkB('CBD5E0'),bottom:mkB('CBD5E0'),left:mkB('CBD5E0'),right:mkB('CBD5E0')};
+  const hbdr={top:mkB('1A56DB'),bottom:mkB('1A56DB'),left:mkB('1A56DB'),right:mkB('1A56DB')};
+  const sbdr={top:mkB('E2E8F0'),bottom:mkB('E2E8F0'),left:mkB('E2E8F0'),right:mkB('E2E8F0')};
+
+  const hCell=(t,w,al)=>new TableCell({borders:hbdr,width:{size:w,type:WidthType.DXA},shading:{fill:'1A56DB',type:ShadingType.CLEAR},margins:{top:100,bottom:100,left:140,right:140},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({alignment:al||AlignmentType.LEFT,children:[new TextRun({text:t,bold:true,color:'FFFFFF',font:'Calibri',size:20})]})]});
+  const bCell=(t,w,shade,al,mono)=>new TableCell({borders:bdr,width:{size:w,type:WidthType.DXA},shading:{fill:shade?'F7FAFC':'FFFFFF',type:ShadingType.CLEAR},margins:{top:100,bottom:100,left:140,right:140},verticalAlign:VerticalAlign.TOP,children:[new Paragraph({alignment:al||AlignmentType.LEFT,children:[new TextRun({text:t||'',font:mono?'Courier New':'Calibri',size:18,italics:false})]})]});
+  const secCell=(t,cols)=>new TableRow({children:[new TableCell({borders:sbdr,columnSpan:cols,width:{size:CONTENT_W,type:WidthType.DXA},shading:{fill:'EBF4FF',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:140,right:140},children:[new Paragraph({children:[new TextRun({text:t,bold:true,font:'Calibri',size:20,color:'1A56DB'})]})]})]});
+
+  const metaRow=(label,value)=>new Paragraph({spacing:{after:40},children:[
+    new TextRun({text:label+': ',bold:true,font:'Calibri',size:20,color:'374151'}),
+    new TextRun({text:value||'—',font:'Calibri',size:20,color:'6B7280'})
+  ]});
+
+  const mkDoc=(sections)=>new Document({
+    styles:{default:{document:{run:{font:'Calibri',size:20}}},paragraphStyles:[
+      {id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:32,bold:true,font:'Calibri',color:'111827'},paragraph:{spacing:{before:280,after:160},outlineLevel:0}},
+      {id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:24,bold:true,font:'Calibri',color:'1A56DB'},paragraph:{spacing:{before:280,after:120},outlineLevel:1}}
+    ]},
+    sections
+  });
+
+  return{Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,BorderStyle,WidthType,ShadingType,HeadingLevel,VerticalAlign,AlignmentType,PageNumber,PageOrientation,A4_W,A4_H,MARGIN,CONTENT_W,hCell,bCell,secCell,metaRow,mkDoc};
+}
+
+/* ══════════════════════════════════ EXPORT STRATEGY ══════════════════════════════════ */
 async function expWord(){
-  if(!results){showErr('No results to export. Please render results first.');return}
-  if(docxLoadErr||!window.docx){
-    showErr('Word export library failed to load. Please check your internet connection and reload the page.');
-    return;
-  }
+  if(!results){showErr('Please render results first.');return}
+  if(docxLoadErr||!window.docx){showErr('Word library failed to load. Reload the page and try again.');return}
   const btn=document.getElementById('wBtn');
-  btn.disabled=true;btn.innerHTML='<div class="spin-d"></div><span>Exporting...</span>';
+  btn.disabled=true;btn.innerHTML='<div class="spin"></div><span>Exporting...</span>';
   try{
-    const{Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,
-          BorderStyle,WidthType,ShadingType,HeadingLevel,VerticalAlign}=window.docx;
+    const{Paragraph,TextRun,Table,TableRow,HeadingLevel,WidthType,AlignmentType,
+          A4_W,A4_H,MARGIN,CONTENT_W,hCell,bCell,secCell,metaRow,mkDoc,Packer}=getDocxHelpers();
 
-    const mb=c=>({style:BorderStyle.SINGLE,size:4,color:c});
-    const bdr={top:mb('334155'),bottom:mb('334155'),left:mb('334155'),right:mb('334155')};
-    const hbdr={top:mb('1E40AF'),bottom:mb('1E40AF'),left:mb('1E40AF'),right:mb('1E40AF')};
-    const hc=(t,w)=>new TableCell({borders:hbdr,width:{size:w,type:WidthType.DXA},shading:{fill:'1E3A8A',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({children:[new TextRun({text:t,bold:true,color:'FFFFFF',font:'Calibri',size:22})]})]});
-    const bc=(t,w,it,mn,sh)=>new TableCell({borders:bdr,width:{size:w,type:WidthType.DXA},shading:{fill:sh?'F1F5F9':'FFFFFF',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.TOP,children:[new Paragraph({children:[new TextRun({text:t||'',font:mn?'Courier New':'Calibri',size:20,italics:!!it})]})]});
-
-    const picot=results.picot||results.pico||{};
+    const picots=results.picots||results.picot||results.pico||{};
     const terms=results.terms||{};
     const queries=results.queries||{};
-    const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Time / Study type'};
-    const sm=stype!=='tiab', st2=stype!=='mesh';
-    const keys=Object.keys(picot).filter(k=>['P','I','C','O','T'].includes(k));
+    const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Timeframe',S:'Setting'};
+    const sm=stype!=='tiab'&&stype!=='author'&&stype!=='none';
+    const st2=stype!=='mesh'&&stype!=='author'&&stype!=='none';
+    const keys=Object.keys(picots).filter(k=>['P','I','C','O','T','S'].includes(k));
+    const DBO=['PubMed','Embase','Cochrane','Scopus','Web of Science','Google Scholar'];
+    const activeDbs=DBO.filter(db=>dbs.includes(db));
 
-    let cols,hdrs;
-    if(sm&&st2){cols=[900,1800,2500,2300];hdrs=['Element','Description','MeSH Terms','Title/Abstract Keywords']}
-    else if(sm){cols=[900,2100,4000];hdrs=['Element','Description','MeSH Terms']}
-    else{cols=[900,2100,4000];hdrs=['Element','Description','Title/Abstract Keywords']}
+    // PICOTS table
+    let pCols,pHdrs;
+    if(sm&&st2){pCols=[1400,2000,3100,3138];pHdrs=['Element','Description','MeSH Terms','Title/Abstract Keywords']}
+    else if(sm){pCols=[1400,2200,6038];pHdrs=['Element','Description','MeSH Terms']}
+    else if(st2){pCols=[1400,2200,6038];pHdrs=['Element','Description','Title/Abstract Keywords']}
+    else{pCols=[1400,4000,4238];pHdrs=['Element','Description','Notes']}
 
-    const ptbl=new Table({
-      width:{size:cols.reduce((a,b)=>a+b,0),type:WidthType.DXA},columnWidths:cols,
+    const picoTbl=new Table({
+      width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:pCols,
       rows:[
-        new TableRow({children:hdrs.map((h,i)=>hc(h,cols[i]))}),
-        ...keys.map((k,i)=>{
-          const t=terms[k]||{mesh:[],tiab:[]};const sh=i%2===1;
-          const cs=[bc(`${k} — ${pl[k]||k}`,cols[0],false,false,sh),bc(picot[k]||'',cols[1],false,false,sh)];
-          if(sm)cs.push(bc((t.mesh||[]).join('; '),cols[cs.length],true,false,sh));
-          if(st2)cs.push(bc((t.tiab||[]).join('; '),cols[cs.length],false,true,sh));
+        new TableRow({children:pHdrs.map((h,i)=>hCell(h,pCols[i]))}),
+        ...keys.map((k,idx)=>{
+          const t=terms[k]||{mesh:[],tiab:[]};const sh=idx%2===1;
+          const cs=[bCell(`${k} — ${pl[k]||k}`,pCols[0],sh),bCell(picots[k]||'',pCols[1],sh)];
+          if(sm)cs.push(bCell((t.mesh||[]).join('; '),pCols[cs.length],sh,undefined,true));
+          else if(st2)cs.push(bCell((t.tiab||[]).join('; '),pCols[cs.length],sh,undefined,true));
+          else cs.push(bCell('',pCols[cs.length],sh));
+          if(sm&&st2)cs.push(bCell((t.tiab||[]).join('; '),pCols[cs.length],sh,undefined,true));
           return new TableRow({children:cs});
         })
       ]
     });
 
-    const qc=[1400,6100];
-    const dbo=['PubMed','Embase','Cochrane','Scopus','Web of Science'];
-    const qtbl=new Table({
-      width:{size:7500,type:WidthType.DXA},columnWidths:qc,
-      rows:[
-        new TableRow({children:[hc('Database',qc[0]),hc('Search Query',qc[1])]}),
-        ...dbo.filter(db=>dbs.includes(db)).map((db,i)=>
-          new TableRow({children:[bc(db,qc[0],false,false,i%2===1),bc(queries[db]||'',qc[1],false,true,i%2===1)]})
-        )
-      ]
+    // Query table
+    const isPerPicots=qmode==='picots'&&activeDbs.some(db=>queries[db]&&typeof queries[db]==='object');
+    const qCols=[1800,7838];
+    const qRows=[new TableRow({children:[hCell('Database',qCols[0]),hCell('Search Query',qCols[1])]})];
+    activeDbs.forEach((db,i)=>{
+      const q=queries[db];
+      const isPO=q&&typeof q==='object';
+      const qStr=isPO?(q.combined||''):(q||'');
+      qRows.push(new TableRow({children:[bCell(db,qCols[0],i%2===1),bCell(qStr,qCols[1],i%2===1,undefined,true)]}));
     });
+    const qTbl=new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:qCols,rows:qRows});
 
     const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-    const ts={both:'MeSH + Title/Abstract',mesh:'MeSH terms only',tiab:'Title/Abstract only'}[stype];
-
+    const ts={both:'MeSH + Title/Abstract',mesh:'MeSH only',tiab:'Title/Abstract only',author:'Author & Journal',none:'No term generation'}[stype]||stype;
     const useDate=document.getElementById('useDateRange').checked;
     let dateLabel='Inception to today (no restriction)';
     if(useDate){
-      const from=document.getElementById('dateFrom').value;
-      const to=document.getElementById('dateTo').value;
       const fd=d=>{const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
-      dateLabel=`${fd(from)} — ${fd(to)}`;
+      dateLabel=`${fd(document.getElementById('dateFrom').value)} — ${fd(document.getElementById('dateTo').value)}`;
     }
+    const oNot=document.getElementById('picotNot').value.trim();
 
-    const doc=new Document({
-      styles:{default:{document:{run:{font:'Calibri',size:24}}},paragraphStyles:[
-        {id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:36,bold:true,font:'Calibri',color:'1E3A8A'},paragraph:{spacing:{before:240,after:160},outlineLevel:0}},
-        {id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,run:{size:26,bold:true,font:'Calibri',color:'1D4ED8'},paragraph:{spacing:{before:320,after:120},outlineLevel:1}}
-      ]},
-      sections:[{
-        properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1080,bottom:1440,left:1080}}},
-        children:[
-          new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Systematic Review Search Strategy',font:'Calibri',size:36,bold:true,color:'1E3A8A'})]}),
-          new Paragraph({spacing:{after:60},children:[new TextRun({text:'Study objective:  ',bold:true,font:'Calibri',size:22}),new TextRun({text:study,font:'Calibri',size:22})]}),
-          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Date generated:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:today,font:'Calibri',size:20,color:'64748B'})]}),
-          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Search term type:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:ts,font:'Calibri',size:20,color:'64748B'})]}),
-          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Study type:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:studyTypes.join(', '),font:'Calibri',size:20,color:'64748B'})]}),
-          new Paragraph({spacing:{after:40},children:[new TextRun({text:'Date range:  ',bold:true,font:'Calibri',size:20,color:'64748B'}),new TextRun({text:dateLabel,font:'Calibri',size:20,color:'64748B'})]}),
-          new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'PICOT Framework & Search Terms',font:'Calibri',size:26,bold:true,color:'1D4ED8'})]}),
-          ptbl,
-          new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Database Search Queries',font:'Calibri',size:26,bold:true,color:'1D4ED8'})]}),
-          new Paragraph({spacing:{after:120},children:[new TextRun({text:`Queries for ${dbs.length} database(s): ${dbs.join(', ')}.`,font:'Calibri',size:20,color:'64748B',italics:true})]}),
-          qtbl,
-          new Paragraph({spacing:{before:400},children:[new TextRun({text:'Note: Generated strategies should be reviewed and validated by a medical librarian before use.',font:'Calibri',size:18,color:'94A3B8',italics:true})]})
-        ]
-      }]
-    });
+    const doc=mkDoc([{
+      properties:{page:{size:{width:A4_W,height:A4_H},margin:{top:MARGIN,right:MARGIN,bottom:MARGIN,left:MARGIN}}},
+      children:[
+        new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Systematic Review Search Strategy',font:'Calibri',size:32,bold:true,color:'111827'})]}),
+        metaRow('Study objective',study),
+        metaRow('Date generated',today),
+        metaRow('Term type',ts),
+        metaRow('Search depth',searchDepth==='comprehensive'?'Comprehensive (full synonyms, truncation, all variants)':'Quick (core terms only)'),
+        metaRow('Study type',studyTypes.join(', ')),
+        metaRow('Date range',dateLabel),
+        metaRow('Databases',activeDbs.join(', ')),
+        metaRow('Query mode',qmode==='picots'?'Per PICOTS element':'Combined'),
+        ...(oNot?[metaRow('Exclusion (NOT)',oNot)]:[]),
+        new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:'',size:4})]}),
+        new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'1. PICOTS Framework & Search Terms',font:'Calibri',size:24,bold:true,color:'1A56DB'})]}),
+        picoTbl,
+        new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'2. Database Search Queries',font:'Calibri',size:24,bold:true,color:'1A56DB'})]}),
+        new Paragraph({spacing:{after:120},children:[new TextRun({text:`Queries for ${activeDbs.length} database(s): ${activeDbs.join(', ')}.`,font:'Calibri',size:18,color:'6B7280',italics:true})]}),
+        qTbl,
+        new Paragraph({spacing:{before:400},children:[
+          new TextRun({text:'⚠️ Important: ',bold:true,font:'Calibri',size:18,color:'92400E'}),
+          new TextRun({text:'These AI-generated search strategies must be reviewed and validated by a qualified medical librarian before use in a systematic review.',font:'Calibri',size:18,color:'92400E',italics:true})
+        ]})
+      ]
+    }]);
 
     const blob=await Packer.toBlob(doc);
     const url=URL.createObjectURL(blob);
@@ -777,162 +1393,111 @@ async function expWord(){
     a.href=url;a.download=`search_strategy_${new Date().toISOString().slice(0,10)}.docx`;
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }catch(e){
-    showErr('Word export failed: '+e.message);
-  }finally{
-    btn.disabled=false;
-    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export to Word';
-  }
+  }catch(e){showErr('Export failed: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export strategy';}
 }
 
+/* ══════════════════════════════════ EXPORT LOG ══════════════════════════════════ */
+async function expWordLog(){
+  if(!results){showErr('Please render results first.');return}
+  if(docxLoadErr||!window.docx){showErr('Word library failed to load. Reload and try again.');return}
+  const btn=document.getElementById('logBtn');
+  btn.disabled=true;btn.innerHTML='<div class="spin-dark"></div><span>Exporting...</span>';
+  try{
+    const{Paragraph,TextRun,Table,TableRow,TableCell,HeadingLevel,WidthType,AlignmentType,
+          A4_W,A4_H,MARGIN,CONTENT_W,hCell,bCell,secCell,metaRow,mkDoc,Packer}=getDocxHelpers();
+
+    const queries=results.queries||{};
+    const picots=results.picots||results.picot||results.pico||{};
+    const pl={P:'Population',I:'Intervention',C:'Comparator',O:'Outcome',T:'Timeframe',S:'Setting'};
+    const DBO=['PubMed','Embase','Cochrane','Scopus','Web of Science','Google Scholar'];
+    const activeDbs=DBO.filter(db=>dbs.includes(db));
+    const isPerPicots=qmode==='picots'&&activeDbs.some(db=>queries[db]&&typeof queries[db]==='object');
+    const keys=Object.keys(picots).filter(k=>['P','I','C','O','T','S'].includes(k));
+
+    // 3-col log table: #, Search terms, Results
+    const nCols=[500,8038,1100];
+    const logRows=[new TableRow({children:[
+      hCell('#',nCols[0],AlignmentType.CENTER),
+      hCell('Search Terms',nCols[1]),
+      hCell('Results (n)',nCols[2],AlignmentType.CENTER)
+    ]})];
+
+    activeDbs.forEach(db=>{
+      logRows.push(secCell(db,3)); // section row — number resets per DB
+      let num=1;
+      const q=queries[db];
+      const isPO=q&&typeof q==='object';
+
+      if(isPerPicots&&isPO){
+        keys.forEach(k=>{
+          const qk=q[k]; if(!qk||qk==='Not applicable')return;
+          const sh=num%2===0;
+          logRows.push(new TableRow({children:[
+            bCell(String(num++),nCols[0],sh,AlignmentType.CENTER),
+            bCell(`[${k} — ${pl[k]}]\n${qk}`,nCols[1],sh,undefined,true),
+            bCell('',nCols[2],sh,AlignmentType.CENTER)
+          ]}));
+        });
+        if(q.combined){
+          const sh=num%2===0;
+          logRows.push(new TableRow({children:[
+            bCell(String(num++),nCols[0],sh,AlignmentType.CENTER),
+            bCell(`[Combined: P AND I AND C AND O AND T AND S]\n${q.combined}`,nCols[1],sh,undefined,true),
+            bCell('',nCols[2],sh,AlignmentType.CENTER)
+          ]}));
+        }
+      } else {
+        const qStr=isPO?(q.combined||''):(q||'');
+        logRows.push(new TableRow({children:[
+          bCell('1',nCols[0],false,AlignmentType.CENTER),
+          bCell(qStr,nCols[1],false,undefined,true),
+          bCell('',nCols[2],false,AlignmentType.CENTER)
+        ]}));
+      }
+    });
+
+    const logTbl=new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:nCols,rows:logRows});
+    const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+
+    const doc=mkDoc([{
+      properties:{page:{size:{width:A4_W,height:A4_H},margin:{top:MARGIN,right:MARGIN,bottom:MARGIN,left:MARGIN}}},
+      children:[
+        new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Search Log Template',font:'Calibri',size:32,bold:true,color:'111827'})]}),
+        metaRow('Study',study),
+        metaRow('Date',today),
+        metaRow('Query mode',isPerPicots?'Per PICOTS element (numbered per database)':'Combined'),
+        metaRow('Search depth',searchDepth==='comprehensive'?'Comprehensive':'Quick'),
+        metaRow('Databases',activeDbs.join(', ')),
+        new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:'',size:4})]}),
+        new Paragraph({spacing:{after:120},children:[new TextRun({text:'Instructions: Run each search query in the respective database and record the number of results retrieved. Numbering restarts for each database.',font:'Calibri',size:18,color:'6B7280',italics:true})]}),
+        logTbl,
+        new Paragraph({spacing:{before:400},children:[
+          new TextRun({text:'⚠️ Important: ',bold:true,font:'Calibri',size:18,color:'92400E'}),
+          new TextRun({text:'Review and validate all queries with a medical librarian before use.',font:'Calibri',size:18,color:'92400E',italics:true})
+        ]})
+      ]
+    }]);
+
+    const blob=await Packer.toBlob(doc);
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`search_log_${new Date().toISOString().slice(0,10)}.docx`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){showErr('Log export failed: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M15 11H9m6 4H9"/></svg>Search log template (.docx)';}
+}
+
+/* ══════════════════════════════════ MODAL ══════════════════════════════════ */
+function openReadme(){document.getElementById('readmeModal').style.display='flex';document.body.style.overflow='hidden'}
+function closeReadme(){document.getElementById('readmeModal').style.display='none';document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReadme()});
+
+/* ══════════════════════════════════ UTILS ══════════════════════════════════ */
 function showErr(m){document.getElementById('errBox').innerHTML=`<div class="err">${esc(m)}</div>`}
 function clearErr(){document.getElementById('errBox').innerHTML=''}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-/* ── README MODAL ── */
-function openReadme(){
-  document.getElementById('readmeModal').style.display='flex';
-  document.body.style.overflow='hidden';
-}
-function closeReadme(){
-  document.getElementById('readmeModal').style.display='none';
-  document.body.style.overflow='';
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReadme()});
 </script>
-
-<!-- README MODAL -->
-<div id="readmeModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeReadme()">
-  <div class="modal">
-    <div class="modal-hdr">
-      <div class="modal-hdr-left">
-        <span class="modal-hdr-title">SRKey</span>
-        <span class="modal-version">v1.3.0</span>
-      </div>
-      <button class="modal-close" onclick="closeReadme()" aria-label="Close">✕</button>
-    </div>
-    <div class="modal-body readme">
-
-      <p>A free, browser-based tool that generates <strong>PICOT-based search strategies</strong> for systematic reviews using Claude AI — no API key or installation required.</p>
-
-      <h2>How to use</h2>
-      <div class="readme-steps">
-        <div class="readme-step"><div class="readme-step-num">1</div><div class="readme-step-txt"><strong>Fill in your study</strong>Enter your objective, select study type, date range, databases, and term type</div></div>
-        <div class="readme-step"><div class="readme-step-num">2</div><div class="readme-step-txt"><strong>Build &amp; copy prompt</strong>Click "Build prompt", copy it, then open Claude.ai and paste</div></div>
-        <div class="readme-step"><div class="readme-step-num">3</div><div class="readme-step-txt"><strong>Paste JSON back</strong>Copy Claude's entire JSON response and paste it into the response box</div></div>
-        <div class="readme-step"><div class="readme-step-num">4</div><div class="readme-step-txt"><strong>Export &amp; use</strong>Copy individual queries or export the full strategy to Word (.docx)</div></div>
-      </div>
-
-      <h2>PICOT framework</h2>
-      <table class="readme-table">
-        <thead><tr><th>Element</th><th>Stands for</th><th>Example</th></tr></thead>
-        <tbody>
-          <tr><td><code>P</code></td><td><strong>Population</strong></td><td>Adults with type 2 diabetes</td></tr>
-          <tr><td><code>I</code></td><td><strong>Intervention</strong></td><td>SGLT-2 inhibitors</td></tr>
-          <tr><td><code>C</code></td><td><strong>Comparator</strong></td><td>Placebo or standard care</td></tr>
-          <tr><td><code>O</code></td><td><strong>Outcome</strong></td><td>Cardiovascular events, HbA1c</td></tr>
-          <tr><td><code>T</code></td><td><strong>Time / Study type</strong></td><td>RCTs, inception–2024</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Features</h2>
-
-      <h3>Search term types</h3>
-      <ul>
-        <li><strong>MeSH + Title/Abstract</strong> — NLM MeSH headings combined with free-text keywords, synonyms, and abbreviations (recommended)</li>
-        <li><strong>MeSH only</strong> — controlled vocabulary terms only</li>
-        <li><strong>Title/Abstract only</strong> — free-text keywords and synonyms only</li>
-      </ul>
-
-      <h3>Study type filters</h3>
-      <ul>
-        <li>Randomised Controlled Trials (RCTs)</li>
-        <li>Observational studies (cohort, case-control, cross-sectional)</li>
-        <li>Systematic reviews / Meta-analyses</li>
-        <li>All study types (no filter applied)</li>
-      </ul>
-      <p>Multiple study types can be selected simultaneously.</p>
-
-      <h3>Database support</h3>
-      <table class="readme-table">
-        <thead><tr><th>Database</th><th>Query syntax used</th></tr></thead>
-        <tbody>
-          <tr><td><strong>PubMed</strong></td><td><code>[MeSH Terms]</code>, <code>[tiab]</code></td></tr>
-          <tr><td><strong>Embase</strong></td><td><code>/exp</code>, <code>:ti,ab</code></td></tr>
-          <tr><td><strong>Cochrane CENTRAL</strong></td><td>MeSH + free-text</td></tr>
-          <tr><td><strong>Scopus</strong></td><td><code>TITLE-ABS-KEY()</code></td></tr>
-          <tr><td><strong>Web of Science</strong></td><td><code>TS=()</code></td></tr>
-        </tbody>
-      </table>
-      <p>Select one or more databases — all queries are generated and displayed simultaneously.</p>
-
-      <h3>Date range</h3>
-      <p>Leave unchecked to search from inception to today. Enable the date picker to restrict by publication year. Date filter syntax is applied automatically per database.</p>
-
-      <h3>Export to Word</h3>
-      <p>Downloads a formatted <code>.docx</code> file containing the PICOT framework table, all database queries, and study metadata (objective, date, term type, study type, date range).</p>
-
-      <h2>Tips for best results</h2>
-      <ul>
-        <li>Be <strong>specific</strong> in your objective — include population, intervention, and comparator where possible</li>
-        <li>Always <strong>verify MeSH terms</strong> at <a href="https://meshb.nlm.nih.gov/" target="_blank">meshb.nlm.nih.gov</a> before use</li>
-        <li>Generated queries are a <strong>starting point</strong> — additional terms may be needed based on your protocol</li>
-        <li><strong>Validate your final strategy</strong> with a medical librarian before conducting the review</li>
-      </ul>
-
-      <h2>Changelog</h2>
-      <div class="changelog-item">
-        <div class="changelog-ver">
-          <span class="changelog-tag">v1.3.0</span>
-          <span class="changelog-date">April 2026</span>
-          <span class="changelog-new">Latest</span>
-        </div>
-        <ul>
-          <li>Upgraded PICO to <strong>PICOT</strong> framework (added Time / Study type element)</li>
-          <li>Added <strong>study type filters</strong>: RCT, Observational, Systematic review, All</li>
-          <li>Added <strong>date range picker</strong> with per-database date filter syntax</li>
-          <li>Multi-database display — all selected databases rendered simultaneously</li>
-          <li>Added this in-app README</li>
-        </ul>
-      </div>
-      <div class="changelog-item">
-        <div class="changelog-ver">
-          <span class="changelog-tag">v1.2.0</span>
-          <span class="changelog-date">March 2026</span>
-        </div>
-        <ul>
-          <li>Added <strong>Export to Word</strong> (.docx) with formatted tables</li>
-          <li>Word document includes study metadata header</li>
-        </ul>
-      </div>
-      <div class="changelog-item">
-        <div class="changelog-ver">
-          <span class="changelog-tag">v1.1.0</span>
-          <span class="changelog-date">February 2026</span>
-        </div>
-        <ul>
-          <li>Multi-database selection (PubMed, Embase, Cochrane, Scopus, Web of Science)</li>
-          <li>Per-database copy and copy-all functionality</li>
-        </ul>
-      </div>
-      <div class="changelog-item">
-        <div class="changelog-ver">
-          <span class="changelog-tag">v1.0.0</span>
-          <span class="changelog-date">January 2026</span>
-        </div>
-        <ul>
-          <li>Initial release — PICO framework, MeSH and TIAB term generation</li>
-          <li>Single-file HTML app, no installation required</li>
-        </ul>
-      </div>
-
-      <h2>Disclaimer</h2>
-      <p>SRKey is intended as a research aid for health sciences students and researchers. Generated search strategies are AI-assisted starting points and <strong>must be reviewed and validated by a qualified medical librarian</strong> before use in a systematic review.</p>
-      <p style="margin-bottom:0">Built with <a href="https://claude.ai" target="_blank">Claude AI</a> · <a href="https://docx.js.org" target="_blank">docx.js</a> · Hosted on GitHub Pages · MIT License</p>
-
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
