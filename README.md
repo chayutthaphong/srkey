@@ -139,7 +139,7 @@ All generated search strategies **must be reviewed and validated by a qualified 
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License
 
 ---
 
